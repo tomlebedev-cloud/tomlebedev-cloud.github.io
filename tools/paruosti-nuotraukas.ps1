@@ -59,6 +59,24 @@ function Sumazink {
     return @($nw, $nh)
 }
 
+function TaisykOrientacija {
+    # Fotoaparatas vertikalius kadrus iraso horizontaliai, o pasukima
+    # nurodo tik EXIF zymeje 274. System.Drawing jos nepaiso, todel
+    # pasukam patys - kitaip vertikalios nuotraukos gultu ant sono.
+    param($Img)
+    if ($Img.PropertyIdList -notcontains 274) { return }
+    $o = $Img.GetPropertyItem(274).Value[0]
+    switch ($o) {
+        2 { $Img.RotateFlip([System.Drawing.RotateFlipType]::RotateNoneFlipX) }
+        3 { $Img.RotateFlip([System.Drawing.RotateFlipType]::Rotate180FlipNone) }
+        4 { $Img.RotateFlip([System.Drawing.RotateFlipType]::Rotate180FlipX) }
+        5 { $Img.RotateFlip([System.Drawing.RotateFlipType]::Rotate90FlipX) }
+        6 { $Img.RotateFlip([System.Drawing.RotateFlipType]::Rotate90FlipNone) }
+        7 { $Img.RotateFlip([System.Drawing.RotateFlipType]::Rotate270FlipX) }
+        8 { $Img.RotateFlip([System.Drawing.RotateFlipType]::Rotate270FlipNone) }
+    }
+}
+
 function UrlKelias {
     # kiekviena kelio dali uzkoduojam atskirai, kad tarpai ir
     # lietuviskos raides veiktu ir GitHub Pages serveryje
@@ -106,6 +124,7 @@ foreach ($f in $failai) {
     try {
         if ($reikia) {
             $img = [System.Drawing.Image]::FromFile($f.FullName)
+            TaisykOrientacija -Img $img
             try {
                 $d1 = Sumazink -Img $img -Isvestis $fullKelias  -Riba $FullDydis
                 $null = Sumazink -Img $img -Isvestis $thumbKelias -Riba $ThumbDydis
