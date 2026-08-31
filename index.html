@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tomas Lebedevas — Fotografija</title>
+<meta name="description" content="Kelionių, sporto ir reportažo fotografija.">
+<meta property="og:title" content="Tomas Lebedevas — Fotografija">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="#">Tomas&nbsp;Lebedevas</a>
+  <nav>
+    <a href="#darbai">Darbai</a>
+    <a href="#apie">Apie</a>
+    <a href="#kontaktai">Kontaktai</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Fotografija</h1>
+  <p>Kelionės, sportas, akimirkos.</p>
+</section>
+
+<main id="darbai">
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>
+    Nuotraukų dar nėra. Sudėk jas į <code>photos/full/</code> ir paleisk
+    <code>tools/paruosti-nuotraukas.ps1</code>.
+  </p>
+</main>
+
+<section id="apie">
+  <h2>Apie</h2>
+  <p>
+    Fotografuoju Nikon D750. Daugiausia keliones, sportą ir kasdienes akimirkas —
+    tai, kas vyksta savaime, be pozavimo.
+  </p>
+</section>
+
+<footer id="kontaktai">
+  <h2>Kontaktai</h2>
+  <p><a href="mailto:tomas.lebedevas@diagsis.com">tomas.lebedevas@diagsis.com</a></p>
+  <p class="fine">© <span id="metai"></span> Tomas Lebedevas. Visos nuotraukos autorinės.</p>
+</footer>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-close" id="lbClose" aria-label="Uždaryti">&times;</button>
+  <button class="lb-nav lb-prev" id="lbPrev" aria-label="Ankstesnė">&#8249;</button>
+  <img id="lbImg" alt="">
+  <button class="lb-nav lb-next" id="lbNext" aria-label="Kita">&#8250;</button>
+  <div class="lb-caption" id="lbCaption"></div>
+</div>
+
+<script src="photos.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

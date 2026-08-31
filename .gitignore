@@ -1,0 +1,11 @@
+# Originalai (dideli) - i GitHub nekeliami, laikomi tik kompiuteryje
+photos/_originalai/
+
+# Windows
+Thumbs.db
+Desktop.ini
+desktop.ini
+
+# Redaktoriai
+.vscode/
+.idea/
