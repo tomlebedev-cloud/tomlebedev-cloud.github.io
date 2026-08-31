@@ -2,12 +2,21 @@
 <html lang="lt">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tomas Lebedevas — Fotografija</title>
 <meta name="description" content="Kelionių, sporto ir reportažo fotografija.">
 <meta property="og:title" content="Tomas Lebedevas — Fotografija">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="assets/style.css">
+
+<!-- PWA: idiegiama i telefono darbalauki -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d0d0f">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fotografija">
+<meta name="mobile-web-app-capable" content="yes">
 </head>
 <body>
 
@@ -58,5 +67,12 @@
 
 <script src="photos.js"></script>
 <script src="assets/app.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js");
+    });
+  }
+</script>
 </body>
 </html>

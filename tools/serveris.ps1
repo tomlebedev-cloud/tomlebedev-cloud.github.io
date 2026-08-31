@@ -6,7 +6,7 @@ try { $l.Start() } catch { Write-Host "NEPAVYKO: $($_.Exception.Message)"; exit 
 Write-Host "Serveris veikia: http://localhost:8099  (Ctrl+C sustabdyti)"
 $tipai = @{ ".html"="text/html; charset=utf-8"; ".css"="text/css; charset=utf-8";
             ".js"="application/javascript; charset=utf-8"; ".jpg"="image/jpeg"; ".jpeg"="image/jpeg";
-            ".png"="image/png"; ".svg"="image/svg+xml"; ".ico"="image/x-icon" }
+            ".png"="image/png"; ".svg"="image/svg+xml"; ".ico"="image/x-icon"; ".json"="application/manifest+json"; ".webmanifest"="application/manifest+json" }
 while ($l.IsListening) {
   try {
     $ctx = $l.GetContext()

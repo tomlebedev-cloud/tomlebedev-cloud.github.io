@@ -136,3 +136,31 @@ main{max-width:var(--max);margin:0 auto;padding:0 28px 90px}
   *{transition:none!important;animation:none!important}
   html{scroll-behavior:auto}
 }
+
+/* --- iOS: saugi zona (isvasa, apatine juosta) --------------------------- */
+/* Su apple-mobile-web-app-status-bar-style=black-translucent turinys
+   piesiamas po virsutine juosta, todel parastes imam is env(). */
+.site-header{
+  padding-top:calc(18px + env(safe-area-inset-top));
+  padding-left:calc(28px + env(safe-area-inset-left));
+  padding-right:calc(28px + env(safe-area-inset-right));
+}
+main,#apie,#kontaktai{
+  padding-left:calc(28px + env(safe-area-inset-left));
+  padding-right:calc(28px + env(safe-area-inset-right));
+}
+#kontaktai{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+.lb-close{top:calc(20px + env(safe-area-inset-top))}
+.lb-caption{bottom:calc(22px + env(safe-area-inset-bottom))}
+
+@media(max-width:640px){
+  .site-header{
+    padding-top:calc(14px + env(safe-area-inset-top));
+    padding-left:calc(18px + env(safe-area-inset-left));
+    padding-right:calc(18px + env(safe-area-inset-right));
+  }
+  main{
+    padding-left:calc(12px + env(safe-area-inset-left));
+    padding-right:calc(12px + env(safe-area-inset-right));
+  }
+}
