@@ -80,9 +80,11 @@
   var lb = document.getElementById('lightbox');
   var lbImg = document.getElementById('lbImg');
   var lbCap = document.getElementById('lbCaption');
+  var grazintiFokusa = null;   // i kuria plytele grizti uzdarius
 
   function open(i) {
     current = i;
+    grazintiFokusa = grid.children[i] || null;
     show();
     lb.hidden = false;
     document.body.style.overflow = 'hidden';
@@ -93,16 +95,21 @@
     lb.hidden = true;
     lbImg.removeAttribute('src');
     document.body.style.overflow = '';
+    if (grazintiFokusa) grazintiFokusa.focus();   // fokusas grizta ten, kur buvo
   }
 
   function show() {
     var p = view[current];
     lbImg.src = p.full;
-    lbImg.alt = p.pavadinimas || '';
-    lbCap.textContent = (p.pavadinimas || '') +
-      (p.galerija ? '  ·  ' + p.galerija : '') +
-      '   (' + (current + 1) + '/' + view.length + ')';
-    // pirmas įkėlimas kaimyninių — kad kitas kadras atsidarytų iškart
+    lbImg.alt = p.pavadinimas || 'Nuotrauka';
+
+    // antraste surenkam tik is to, kas is tikruju yra
+    var dalys = [];
+    if (p.pavadinimas) dalys.push(p.pavadinimas);
+    if (p.galerija) dalys.push(p.galerija);
+    dalys.push((current + 1) + '/' + view.length);
+    lbCap.textContent = dalys.join('  ·  ');
+
     [current - 1, current + 1].forEach(function (n) {
       if (view[n]) { var pre = new Image(); pre.src = view[n].full; }
     });
@@ -120,9 +127,24 @@
 
   document.addEventListener('keydown', function (e) {
     if (lb.hidden) return;
-    if (e.key === 'Escape') close();
-    else if (e.key === 'ArrowLeft') step(-1);
-    else if (e.key === 'ArrowRight') step(1);
+
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key === 'ArrowLeft')  { step(-1); return; }
+    if (e.key === 'ArrowRight') { step(1);  return; }
+
+    // fokuso gaudykle: Tab sukasi tik tarp lightbox mygtuku,
+    // kitaip fokusas nukeliautu i puslapi uz atidarytos nuotraukos
+    if (e.key === 'Tab') {
+      var mygtukai = lb.querySelectorAll('button');
+      if (!mygtukai.length) return;
+      var pirmas = mygtukai[0];
+      var paskutinis = mygtukai[mygtukai.length - 1];
+      if (e.shiftKey && document.activeElement === pirmas) {
+        e.preventDefault(); paskutinis.focus();
+      } else if (!e.shiftKey && document.activeElement === paskutinis) {
+        e.preventDefault(); pirmas.focus();
+      }
+    }
   });
 
   /* --- Braukimas telefone ---------------------------------------------- */

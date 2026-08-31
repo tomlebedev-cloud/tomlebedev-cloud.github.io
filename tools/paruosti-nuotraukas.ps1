@@ -85,6 +85,22 @@ function UrlKelias {
     return ($dalys -join "/")
 }
 
+# Neprivalomos antrastes: kiekvienoje galerijoje gali guleti pavadinimai.txt,
+# kurio eilutes atrodo taip:   DSC_1234.jpg = Rytas prie juros
+# Jei failo ten nera, antraste nerodoma - failo vardas NIEKADA nenaudojamas.
+$antrastes = @{}
+Get-ChildItem -Path $originalai -Recurse -File -Filter pavadinimai.txt -ErrorAction SilentlyContinue | ForEach-Object {
+    $gal = $_.Directory.FullName.Substring($originalai.Length).TrimStart([char]92)
+    Get-Content $_.FullName -Encoding UTF8 | ForEach-Object {
+        $eil = $_.Trim()
+        if ($eil -and -not $eil.StartsWith("#") -and $eil.Contains("=")) {
+            $k = $eil.Substring(0, $eil.IndexOf("=")).Trim()
+            $v = $eil.Substring($eil.IndexOf("=") + 1).Trim()
+            $antrastes["$gal|$k"] = $v
+        }
+    }
+}
+
 $irasai   = New-Object System.Collections.Generic.List[string]
 $nauji    = 0
 $praleisti = 0
@@ -142,7 +158,9 @@ foreach ($f in $failai) {
         continue
     }
 
-    $pavadinimas = [System.IO.Path]::GetFileNameWithoutExtension($f.Name) -replace '[_-]+', ' '
+    $raktas = "$galerija|$($f.Name)"
+    $pavadinimas = ""
+    if ($antrastes.ContainsKey($raktas)) { $pavadinimas = $antrastes[$raktas] }
 
     $j = [ordered]@{
         full        = ("photos/full/"  + (UrlKelias $relJpg))
