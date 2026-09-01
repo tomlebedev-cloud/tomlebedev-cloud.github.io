@@ -1,166 +1,221 @@
-/* --- Pagrindas --------------------------------------------------------- */
+/* ===================================================================
+   Tomas Lebedevas — Fotografija
+   Šilta paletė, serifinė tipografija, teminės sekcijos.
+   =================================================================== */
+
 :root{
-  --bg:#0d0d0f;
-  --bg-soft:#16161a;
-  --fg:#ececee;
-  --fg-dim:#9a9aa2;
-  --line:#26262c;
-  --accent:#e8e8ea;
-  --gap:10px;
-  --max:1400px;
+  /* Paletė: espreso ruda + kreminė. Sąmoningai ne juoda —
+     nuotraukos ant šiltos bazės atrodo ramiau. */
+  --tamsi:      #4a4038;
+  --tamsi-gili: #3b332c;
+  --krem:       #f4f1ea;
+  --krem-sokis: #e3dccd;   /* plyteles fonas, kol nuotrauka dar nekrauta */
+  --tekstas:    #2e2823;
+  --tekstas-svelnus: #6f655b;
+  --ant-tamsios: #f4f1ea;
+  --ant-tamsios-svelnus: #c9bfb2;
+  --linija:     #ded6c8;
+
+  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --max: 1440px;
+  --tarpas: 14px;
 }
+
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
   margin:0;
-  background:var(--bg);
-  color:var(--fg);
-  font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--krem);
+  color:var(--tekstas);
+  font:16px/1.65 var(--sans);
   -webkit-font-smoothing:antialiased;
 }
 a{color:inherit;text-decoration:none}
+img{max-width:100%}
 
-/* --- Antraste ---------------------------------------------------------- */
+/* --- Antraštė ------------------------------------------------------ */
 .site-header{
-  position:sticky;top:0;z-index:50;
-  display:flex;align-items:center;justify-content:space-between;
-  gap:24px;padding:18px 28px;
-  background:rgba(13,13,15,.82);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  padding:calc(20px + env(safe-area-inset-top)) calc(40px + env(safe-area-inset-right)) 20px calc(40px + env(safe-area-inset-left));
+  background:var(--tamsi);
+  color:var(--ant-tamsios);
 }
-.brand{font-weight:600;letter-spacing:.04em;font-size:15px}
-.site-header nav{display:flex;gap:22px;font-size:14px;color:var(--fg-dim)}
-.site-header nav a:hover{color:var(--fg)}
+.brand{
+  font-family:var(--serif);
+  font-size:24px;font-weight:500;letter-spacing:.01em;
+}
+.site-header nav{display:flex;gap:26px;font-size:14px;letter-spacing:.02em}
+.site-header nav a{color:var(--ant-tamsios-svelnus);padding-bottom:3px;border-bottom:1px solid transparent}
+.site-header nav a:hover{color:var(--ant-tamsios);border-bottom-color:var(--ant-tamsios)}
 
-/* --- Hero -------------------------------------------------------------- */
-.hero{padding:110px 28px 70px;text-align:center}
-.hero h1{
-  margin:0 0 12px;
-  font-size:clamp(2.4rem,7vw,4.5rem);
-  font-weight:300;letter-spacing:.12em;text-transform:uppercase;
+/* --- Įžanga -------------------------------------------------------- */
+.iznaga{
+  background:var(--tamsi);color:var(--ant-tamsios);
+  text-align:center;
+  padding:88px 28px 150px;
+  position:relative;
 }
-.hero p{margin:0;color:var(--fg-dim);letter-spacing:.06em}
+.iznaga h1{
+  font-family:var(--serif);
+  margin:0 0 14px;
+  font-size:clamp(3rem,8vw,6rem);
+  font-weight:400;letter-spacing:.04em;line-height:1;
+}
+.iznaga p{
+  margin:0 auto;max-width:34em;
+  color:var(--ant-tamsios-svelnus);
+  font-size:1.02rem;letter-spacing:.02em;
+}
 
-/* --- Filtrai ----------------------------------------------------------- */
-.filters{
-  display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
-  padding:0 28px 34px;
+/* Lenktas perėjimas iš tamsios juostos į kreminę.
+   Elipsė platesnė už ekraną, todėl lankas švelnus. */
+.lankas{
+  position:absolute;left:-10%;right:-10%;bottom:-1px;
+  height:110px;
+  background:var(--krem);
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;
 }
-.filters button{
-  background:none;border:1px solid var(--line);color:var(--fg-dim);
-  padding:7px 16px;border-radius:999px;cursor:pointer;
-  font-size:13px;letter-spacing:.04em;transition:.18s;
+.lankas--virsus{
+  top:-1px;bottom:auto;
+  border-radius:0 0 50% 50% / 0 0 100% 100%;
 }
-.filters button:hover{color:var(--fg);border-color:var(--fg-dim)}
-.filters button[aria-pressed="true"]{background:var(--accent);color:#0d0d0f;border-color:var(--accent)}
 
-/* --- Galerija ---------------------------------------------------------- */
-main{max-width:var(--max);margin:0 auto;padding:0 28px 90px}
-.grid{
+/* --- Sekcija ------------------------------------------------------- */
+.sekcija{margin:0 0 10px}
+
+.sekcija__juosta{
+  position:relative;
+  background:var(--tamsi);color:var(--ant-tamsios);
+  text-align:center;
+  padding:120px 28px 130px;
+}
+.sekcija__juosta h2{
+  font-family:var(--serif);
+  margin:0 0 10px;
+  font-size:clamp(2.4rem,6vw,4.2rem);
+  font-weight:400;letter-spacing:.08em;text-transform:uppercase;line-height:1;
+}
+.sekcija__juosta p{
+  margin:0 auto;max-width:32em;
+  color:var(--ant-tamsios-svelnus);
+  font-size:.98rem;letter-spacing:.02em;
+}
+.sekcija__kiekis{
+  display:block;margin-top:16px;
+  font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ant-tamsios-svelnus);opacity:.7;
+}
+
+/* --- Galerija ------------------------------------------------------ */
+.galerija{
+  max-width:var(--max);
+  margin:0 auto;
+  padding:64px calc(40px + env(safe-area-inset-left)) 84px calc(40px + env(safe-area-inset-right));
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:var(--gap);
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:var(--tarpas);
 }
 .tile{
-  margin:0;
-  position:relative;overflow:hidden;background:var(--bg-soft);
-  border:0;padding:0;cursor:zoom-in;
+  margin:0;padding:0;border:0;
+  position:relative;overflow:hidden;
+  background:var(--krem-sokis);
+  cursor:zoom-in;
   aspect-ratio:3/2;
 }
 .tile img{
   width:100%;height:100%;object-fit:cover;display:block;
-  opacity:0;transition:opacity .5s ease,transform .5s ease;
+  opacity:0;transition:opacity .6s ease,transform .6s ease;
 }
 .tile img.loaded{opacity:1}
-.tile:hover img{transform:scale(1.04)}
+.tile:hover img{transform:scale(1.035)}
+.tile:focus-visible{outline:2px solid var(--tamsi);outline-offset:3px}
 .tile figcaption{
   position:absolute;left:0;right:0;bottom:0;
-  padding:26px 14px 12px;
-  font-size:13px;letter-spacing:.03em;text-align:left;
-  background:linear-gradient(transparent,rgba(0,0,0,.72));
-  opacity:0;transition:opacity .25s;
+  padding:30px 16px 14px;
+  font-family:var(--serif);
+  font-size:1.05rem;letter-spacing:.02em;text-align:left;color:#fff;
+  background:linear-gradient(transparent,rgba(35,29,24,.78));
+  opacity:0;transition:opacity .3s;
 }
 .tile:hover figcaption,.tile:focus-visible figcaption{opacity:1}
-.empty{color:var(--fg-dim);text-align:center;padding:60px 0}
-.empty code{background:var(--bg-soft);padding:2px 6px;border-radius:4px;font-size:.9em}
 
-/* --- Sekcijos ---------------------------------------------------------- */
-#apie,#kontaktai{
-  max-width:640px;margin:0 auto;padding:70px 28px;
-  border-top:1px solid var(--line);
-}
-#apie h2,#kontaktai h2{
-  font-size:13px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--fg-dim);font-weight:500;margin:0 0 18px;
-}
-#kontaktai a{border-bottom:1px solid var(--line)}
-#kontaktai a:hover{border-color:var(--fg)}
-.fine{color:var(--fg-dim);font-size:13px;margin-top:34px}
+.empty{grid-column:1/-1;text-align:center;color:var(--tekstas-svelnus);padding:60px 0}
+.empty code{background:var(--krem-sokis);padding:2px 6px;border-radius:3px;font-size:.9em}
 
-/* --- Lightbox ---------------------------------------------------------- */
+/* --- Apie / kontaktai ---------------------------------------------- */
+.puslapio-galas{
+  position:relative;
+  background:var(--tamsi-gili);color:var(--ant-tamsios);
+  padding:140px 28px calc(70px + env(safe-area-inset-bottom));
+}
+.vidus{max-width:620px;margin:0 auto;text-align:center}
+.puslapio-galas h2{
+  font-family:var(--serif);
+  font-size:2rem;font-weight:400;letter-spacing:.06em;
+  margin:0 0 18px;
+}
+.puslapio-galas p{color:var(--ant-tamsios-svelnus);margin:0 0 16px}
+.puslapio-galas a.pastas{
+  font-family:var(--serif);font-size:1.3rem;
+  color:var(--ant-tamsios);border-bottom:1px solid rgba(244,241,234,.35);
+  padding-bottom:3px;
+}
+.puslapio-galas a.pastas:hover{border-bottom-color:var(--ant-tamsios)}
+.skyrikis{
+  width:46px;height:1px;background:rgba(244,241,234,.3);
+  margin:34px auto;
+}
+.fine{font-size:12.5px;letter-spacing:.04em;opacity:.6}
+
+/* --- Lightbox ------------------------------------------------------ */
 .lightbox{
   position:fixed;inset:0;z-index:100;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(8,8,10,.97);
+  background:rgba(30,25,21,.975);
 }
 .lightbox[hidden]{display:none}
-.lightbox img{max-width:92vw;max-height:86vh;object-fit:contain}
+.lightbox img{max-width:92vw;max-height:84vh;object-fit:contain}
 .lb-close,.lb-nav{
-  position:absolute;background:none;border:0;color:var(--fg);
-  cursor:pointer;line-height:1;opacity:.65;transition:opacity .2s;
+  position:absolute;background:none;border:0;color:var(--krem);
+  cursor:pointer;line-height:1;opacity:.6;transition:opacity .2s;
 }
 .lb-close:hover,.lb-nav:hover{opacity:1}
-.lb-close{top:20px;right:26px;font-size:38px}
-.lb-nav{top:50%;transform:translateY(-50%);font-size:56px;padding:10px 20px}
-.lb-prev{left:8px}
-.lb-next{right:8px}
+.lb-close{top:calc(22px + env(safe-area-inset-top));right:28px;font-size:34px}
+.lb-nav{top:50%;transform:translateY(-50%);font-size:50px;padding:12px 22px}
+.lb-prev{left:6px}
+.lb-next{right:6px}
 .lb-caption{
-  position:absolute;bottom:22px;left:0;right:0;text-align:center;
-  color:var(--fg-dim);font-size:13px;letter-spacing:.04em;
+  position:absolute;bottom:calc(26px + env(safe-area-inset-bottom));left:0;right:0;
+  text-align:center;color:var(--krem);
+  font-family:var(--serif);font-size:1.15rem;letter-spacing:.03em;
+}
+.lb-caption span{
+  display:block;margin-top:5px;
+  font-family:var(--sans);font-size:11.5px;letter-spacing:.16em;
+  text-transform:uppercase;opacity:.55;
 }
 
-/* --- Mobilus ----------------------------------------------------------- */
-@media(max-width:640px){
-  .site-header{padding:14px 18px}
-  .site-header nav{gap:16px;font-size:13px}
-  .hero{padding:70px 18px 46px}
-  main{padding:0 12px 60px}
-  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
-  .lb-nav{font-size:40px;padding:10px}
+/* --- Mobilus ------------------------------------------------------- */
+@media(max-width:760px){
+  .site-header{
+    flex-direction:column;gap:12px;
+    padding:calc(16px + env(safe-area-inset-top)) 18px 14px;
+  }
+  .brand{font-size:20px}
+  .site-header nav{gap:18px;font-size:13px}
+  .iznaga{padding:60px 20px 110px}
+  .sekcija__juosta{padding:84px 22px 96px}
+  .lankas{height:70px}
+  .galerija{padding:38px 10px 52px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}
   .tile figcaption{display:none}
+  .puslapio-galas{padding:100px 22px calc(56px + env(safe-area-inset-bottom))}
+  .lb-nav{font-size:36px;padding:10px}
 }
 
-/* --- Spausdinimas ir judesio mazinimas --------------------------------- */
 @media(prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
   html{scroll-behavior:auto}
-}
-
-/* --- iOS: saugi zona (isvasa, apatine juosta) --------------------------- */
-/* Su apple-mobile-web-app-status-bar-style=black-translucent turinys
-   piesiamas po virsutine juosta, todel parastes imam is env(). */
-.site-header{
-  padding-top:calc(18px + env(safe-area-inset-top));
-  padding-left:calc(28px + env(safe-area-inset-left));
-  padding-right:calc(28px + env(safe-area-inset-right));
-}
-main,#apie,#kontaktai{
-  padding-left:calc(28px + env(safe-area-inset-left));
-  padding-right:calc(28px + env(safe-area-inset-right));
-}
-#kontaktai{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
-.lb-close{top:calc(20px + env(safe-area-inset-top))}
-.lb-caption{bottom:calc(22px + env(safe-area-inset-bottom))}
-
-@media(max-width:640px){
-  .site-header{
-    padding-top:calc(14px + env(safe-area-inset-top));
-    padding-left:calc(18px + env(safe-area-inset-left));
-    padding-right:calc(18px + env(safe-area-inset-right));
-  }
-  main{
-    padding-left:calc(12px + env(safe-area-inset-left));
-    padding-right:calc(12px + env(safe-area-inset-right));
-  }
 }

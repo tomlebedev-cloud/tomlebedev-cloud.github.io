@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tomas Lebedevas — Fotografija</title>
-<meta name="description" content="Kelionių, gatvės ir laukinės gamtos fotografija.">
+<meta name="description" content="Kelionių, laukinės gamtos ir žmonių fotografija.">
 <meta property="og:title" content="Tomas Lebedevas — Fotografija">
 <meta property="og:type" content="website">
-<meta property="og:description" content="Kelionių, gatvės ir laukinės gamtos fotografija.">
+<meta property="og:description" content="Kelionių, laukinės gamtos ir žmonių fotografija.">
 <meta property="og:url" content="https://tomlebedev-cloud.github.io/">
 <meta property="og:image" content="https://tomlebedev-cloud.github.io/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -16,11 +16,14 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
 
-<!-- PWA: idiegiama i telefono darbalauki -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d0d0f">
+<meta name="theme-color" content="#4a4038">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,41 +33,43 @@
 <body>
 
 <header class="site-header">
-  <a class="brand" href="#">Tomas&nbsp;Lebedevas</a>
+  <a class="brand" href="#">Tomas Lebedevas</a>
   <nav>
-    <a href="#darbai">Darbai</a>
+    <a href="#keliones">Kelionės</a>
+    <a href="#gamta">Laukinė gamta</a>
+    <a href="#zmones">Žmonės</a>
     <a href="#apie">Apie</a>
-    <a href="#kontaktai">Kontaktai</a>
   </nav>
 </header>
 
-<section class="hero">
+<section class="iznaga">
   <h1>Fotografija</h1>
-  <p>Kelionės, gatvė, laukinė gamta.</p>
+  <p>Penkiolika metų su fotoaparatu — kelionės, laukinė gamta ir žmonės,
+     kuriuos sutikau pakeliui.</p>
+  <div class="lankas"></div>
 </section>
 
-<main id="darbai">
-  <div class="filters" id="filters"></div>
-  <div class="grid" id="grid"></div>
-  <p class="empty" id="empty" hidden>
-    Nuotraukų dar nėra. Sudėk jas į <code>photos/full/</code> ir paleisk
-    <code>tools/paruosti-nuotraukas.ps1</code>.
-  </p>
-</main>
+<main id="darbai"></main>
 
-<section id="apie">
-  <h2>Apie</h2>
-  <p>
-    Fotografuoju daugiau nei penkiolika metų, Nikon D750. Daugiausia keliones ir gatvę —
-    tai, kas vyksta savaime, be pozavimo. Šioje atrankoje: Marokas, Tanzanija, JAV,
-    Italija, Jungtinė Karalystė ir Lietuva.
-  </p>
-</section>
+<footer class="puslapio-galas" id="apie">
+  <div class="lankas lankas--virsus"></div>
+  <div class="vidus">
+    <h2>Apie</h2>
+    <p>
+      Fotografuoju daugiau nei penkiolika metų, Nikon D750. Daugiausia keliones
+      ir tai, kas vyksta savaime — be pozavimo ir be režisūros.
+    </p>
+    <p>
+      Šioje atrankoje: Marokas, Tanzanija, Jungtinės Valstijos, Italija,
+      Jungtinė Karalystė, Nyderlandai ir Lietuva.
+    </p>
 
-<footer id="kontaktai">
-  <h2>Kontaktai</h2>
-  <p><a href="mailto:tomas.lebedevas@diagsis.com">tomas.lebedevas@diagsis.com</a></p>
-  <p class="fine">© <span id="metai"></span> Tomas Lebedevas. Visos nuotraukos autorinės.</p>
+    <div class="skyrikis"></div>
+
+    <h2 id="kontaktai">Kontaktai</h2>
+    <p><a class="pastas" href="mailto:tomas.lebedevas@diagsis.com">tomas.lebedevas@diagsis.com</a></p>
+    <p class="fine">© <span id="metai"></span> Tomas Lebedevas. Visos nuotraukos autorinės.</p>
+  </div>
 </footer>
 
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Nuotraukos peržiūra" hidden>
@@ -79,9 +84,7 @@
 <script src="assets/app.js"></script>
 <script>
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () {
-      navigator.serviceWorker.register("sw.js");
-    });
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
   }
 </script>
 </body>
