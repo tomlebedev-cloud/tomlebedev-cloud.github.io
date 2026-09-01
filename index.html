@@ -1,18 +1,18 @@
 <!doctype html>
-<html lang="lt">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tomas Lebedevas — Fotografija</title>
-<meta name="description" content="Kelionių, laukinės gamtos ir žmonių fotografija.">
-<meta property="og:title" content="Tomas Lebedevas — Fotografija">
+<title>Tomas Lebedevas — Photography</title>
+<meta name="description" content="Travel, wildlife and people photography.">
+<meta property="og:title" content="Tomas Lebedevas — Photography">
 <meta property="og:type" content="website">
-<meta property="og:description" content="Kelionių, laukinės gamtos ir žmonių fotografija.">
+<meta property="og:description" content="Travel, wildlife and people photography.">
 <meta property="og:url" content="https://tomlebedev-cloud.github.io/">
 <meta property="og:image" content="https://tomlebedev-cloud.github.io/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:locale" content="lt_LT">
+<meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png">
@@ -27,7 +27,7 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Fotografija">
+<meta name="apple-mobile-web-app-title" content="Photography">
 <meta name="mobile-web-app-capable" content="yes">
 </head>
 <body>
@@ -35,48 +35,49 @@
 <header class="site-header">
   <a class="brand" href="#">Tomas Lebedevas</a>
   <nav>
-    <a href="#keliones">Kelionės</a>
-    <a href="#gamta">Laukinė gamta</a>
-    <a href="#zmones">Žmonės</a>
-    <a href="#apie">Apie</a>
+    <a href="#selected">Selected</a>
+    <a href="#travel">Travel</a>
+    <a href="#wildlife">Wildlife</a>
+    <a href="#people">People</a>
+    <a href="#about">About</a>
   </nav>
 </header>
 
 <section class="iznaga">
-  <h1>Fotografija</h1>
-  <p>Penkiolika metų su fotoaparatu — kelionės, laukinė gamta ir žmonės,
-     kuriuos sutikau pakeliui.</p>
+  <h1>Photography</h1>
+  <p>Fifteen years behind a camera — travel, wildlife and the people
+     I met along the way.</p>
   <div class="lankas"></div>
 </section>
 
-<main id="darbai"></main>
+<main id="work"></main>
 
-<footer class="puslapio-galas" id="apie">
+<footer class="puslapio-galas" id="about">
   <div class="lankas lankas--virsus"></div>
   <div class="vidus">
-    <h2>Apie</h2>
+    <h2>About</h2>
     <p>
-      Fotografuoju daugiau nei penkiolika metų, Nikon D750. Daugiausia keliones
-      ir tai, kas vyksta savaime — be pozavimo ir be režisūros.
+      I have been photographing for more than fifteen years, mostly with a Nikon D750.
+      Travel and whatever happens on its own — no posing, no direction.
     </p>
     <p>
-      Šioje atrankoje: Marokas, Tanzanija, Jungtinės Valstijos, Italija,
-      Jungtinė Karalystė, Nyderlandai ir Lietuva.
+      This selection was made in Morocco, Tanzania, the United States, Italy,
+      the United Kingdom, the Netherlands and Lithuania.
     </p>
 
     <div class="skyrikis"></div>
 
-    <h2 id="kontaktai">Kontaktai</h2>
+    <h2 id="contact">Contact</h2>
     <p><a class="pastas" href="mailto:tomas.lebedevas@diagsis.com">tomas.lebedevas@diagsis.com</a></p>
-    <p class="fine">© <span id="metai"></span> Tomas Lebedevas. Visos nuotraukos autorinės.</p>
+    <p class="fine">© <span id="metai"></span> Tomas Lebedevas. All photographs are my own.</p>
   </div>
 </footer>
 
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Nuotraukos peržiūra" hidden>
-  <button class="lb-close" id="lbClose" aria-label="Uždaryti">&times;</button>
-  <button class="lb-nav lb-prev" id="lbPrev" aria-label="Ankstesnė">&#8249;</button>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <button class="lb-nav lb-prev" id="lbPrev" aria-label="Previous">&#8249;</button>
   <img id="lbImg" alt="">
-  <button class="lb-nav lb-next" id="lbNext" aria-label="Kita">&#8250;</button>
+  <button class="lb-nav lb-next" id="lbNext" aria-label="Next">&#8250;</button>
   <div class="lb-caption" id="lbCaption"></div>
 </div>
 

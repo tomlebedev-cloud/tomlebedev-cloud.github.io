@@ -101,6 +101,19 @@ Get-ChildItem -Path $originalai -Recurse -File -Filter pavadinimai.txt -ErrorAct
     }
 }
 
+# Atranka: photos_originalaitranka.txt isvardija geriausias nuotraukas.
+# Jos papildomai rodomos atskiroje sekcijoje puslapio virsuje.
+$atranka = @{}
+$atrankaEile = @{}
+$atrankaFailas = Join-Path $originalai "atranka.txt"
+if (Test-Path -LiteralPath $atrankaFailas) {
+    $nr = 0
+    Get-Content -LiteralPath $atrankaFailas -Encoding UTF8 | ForEach-Object {
+        $e = $_.Trim()
+        if ($e -and -not $e.StartsWith("#")) { $atranka[$e] = $true; $atrankaEile[$e] = $nr; $nr++ }
+    }
+}
+
 $irasai   = New-Object System.Collections.Generic.List[string]
 $nauji    = 0
 $praleisti = 0
@@ -167,6 +180,8 @@ foreach ($f in $failai) {
         thumb       = ("photos/thumb/" + (UrlKelias $relJpg))
         pavadinimas = $pavadinimas
         galerija    = $galerija
+        atranka     = [bool]$atranka[$f.Name]
+        atrankaNr   = $(if ($atrankaEile.ContainsKey($f.Name)) { $atrankaEile[$f.Name] } else { -1 })
         w           = $w
         h           = $h
     } | ConvertTo-Json -Compress
