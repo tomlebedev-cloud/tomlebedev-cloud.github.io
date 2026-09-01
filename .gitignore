@@ -9,3 +9,6 @@ desktop.ini
 # Redaktoriai
 .vscode/
 .idea/
+
+# Isimtos (per panasios) nuotraukos - laikomos tik vietoje
+photos/_atmesta/

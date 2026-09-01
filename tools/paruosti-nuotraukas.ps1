@@ -119,7 +119,7 @@ $nauji    = 0
 $praleisti = 0
 
 $failai = Get-ChildItem -Path $originalai -Recurse -File |
-          Where-Object { $_.Extension -match '^\.(jpg|jpeg)$' } |
+          Where-Object { $_.Extension -match '^[.](jpg|jpeg)$' -and $_.Directory.Name -notlike "_*" } |
           Sort-Object FullName
 
 if ($failai.Count -eq 0) {
