@@ -1,72 +1,44 @@
 <#
-    Paruosia nuotraukas puslapiui.
+    Paruosia nuotraukas ir sugeneruoja STATINI galeriju HTML tiesiai i index.html.
 
-    IDEDI CIA:      photos\_originalai\<Galerija>\*.jpg   (bet kokio dydzio)
-    SKRIPTAS PADARO: photos\full\   - 2560 px, puslapiui
-                     photos\thumb\  - 700 px, galerijos tinkleliui
-                     photos.js      - sarasas, pagal kuri piesiama galerija
+    IDEDI:      photos\_originalai\<Galerija>\*.jpg
+                photos\_originalai\<Galerija>\pavadinimai.txt   failas.jpg = Antraste
+                photos\_originalai\<Galerija>\alt.txt           failas.jpg = alt tekstas
+                photos\_originalai\atranka.txt                  geriausiu nuotrauku sarasas
 
-    Paleidimas (is repozitorijos saknies):
-        powershell -ExecutionPolicy Bypass -File tools\paruosti-nuotraukas.ps1
+    GAUNI:      photos\full\   2560 px
+                photos\thumb\   700 px
+                index.html      galerijos tarp GALLERY:START ir GALLERY:END
 
-    Originalu nekeicia ir nieko netrina. Jau padarytus failus praleidzia,
-    todel pakartotinis paleidimas yra greitas.
+    Paleidimas: powershell -ExecutionPolicy Bypass -File tools\paruosti-nuotraukas.ps1
 #>
 
-param(
-    [int]$FullDydis  = 2560,
-    [int]$ThumbDydis = 700,
-    [int]$Kokybe     = 82
-)
+param([int]$FullDydis = 2000, [int]$ThumbDydis = 700, [int]$Kokybe = 80)
 
 Add-Type -AssemblyName System.Drawing
+$ErrorActionPreference = "Stop"
 
-$saknis    = Split-Path -Parent $PSScriptRoot
+$saknis     = Split-Path -Parent $PSScriptRoot
 $originalai = Join-Path $saknis "photos\_originalai"
-$full      = Join-Path $saknis "photos\full"
-$thumb     = Join-Path $saknis "photos\thumb"
+$full       = Join-Path $saknis "photos\full"
+$thumb      = Join-Path $saknis "photos\thumb"
 
-if (-not (Test-Path $originalai)) {
-    New-Item -ItemType Directory -Path $originalai -Force | Out-Null
-}
+# Sekciju tvarka, antrastes ir paaiskinimai
+$SEKCIJOS = @(
+  @{ id="selected"; vardas=$null;      h2="Selected work";               tekstas="Twenty frames I would show first." }
+  @{ id="travel";   vardas="Travel";   h2="Travel photography";          tekstas="Roads, cities and coastlines - from the medinas of Marrakech to Death Valley." }
+  @{ id="wildlife"; vardas="Wildlife"; h2="Wildlife photography";        tekstas="Tanzania: patience, distance, and light you cannot plan for." }
+  @{ id="people";   vardas="People";   h2="People and street photography"; tekstas="Portraits and moments that happened by themselves." }
+)
 
-$enc = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() |
-       Where-Object { $_.MimeType -eq 'image/jpeg' }
-$params = New-Object System.Drawing.Imaging.EncoderParameters(1)
-$params.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
-    [System.Drawing.Imaging.Encoder]::Quality, [long]$Kokybe)
-
-function Sumazink {
-    param($Img, [string]$Isvestis, [int]$Riba)
-
-    $mastelis = [Math]::Min($Riba / $Img.Width, $Riba / $Img.Height)
-    if ($mastelis -gt 1) { $mastelis = 1 }          # nedidinam
-    $nw = [int][Math]::Round($Img.Width  * $mastelis)
-    $nh = [int][Math]::Round($Img.Height * $mastelis)
-
-    $bmp = New-Object System.Drawing.Bitmap($nw, $nh)
-    try {
-        $g = [System.Drawing.Graphics]::FromImage($bmp)
-        try {
-            $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
-            $g.SmoothingMode     = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
-            $g.PixelOffsetMode   = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
-            $g.DrawImage($Img, 0, 0, $nw, $nh)
-        } finally { $g.Dispose() }
-        $bmp.Save($Isvestis, $enc, $params)
-    } finally { $bmp.Dispose() }
-
-    return @($nw, $nh)
-}
+$enc = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq 'image/jpeg' }
+$par = New-Object System.Drawing.Imaging.EncoderParameters(1)
+$par.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter([System.Drawing.Imaging.Encoder]::Quality, [long]$Kokybe)
 
 function TaisykOrientacija {
-    # Fotoaparatas vertikalius kadrus iraso horizontaliai, o pasukima
-    # nurodo tik EXIF zymeje 274. System.Drawing jos nepaiso, todel
-    # pasukam patys - kitaip vertikalios nuotraukos gultu ant sono.
     param($Img)
     if ($Img.PropertyIdList -notcontains 274) { return }
-    $o = $Img.GetPropertyItem(274).Value[0]
-    switch ($o) {
+    switch ($Img.GetPropertyItem(274).Value[0]) {
         2 { $Img.RotateFlip([System.Drawing.RotateFlipType]::RotateNoneFlipX) }
         3 { $Img.RotateFlip([System.Drawing.RotateFlipType]::Rotate180FlipNone) }
         4 { $Img.RotateFlip([System.Drawing.RotateFlipType]::Rotate180FlipX) }
@@ -77,127 +49,152 @@ function TaisykOrientacija {
     }
 }
 
-function UrlKelias {
-    # kiekviena kelio dali uzkoduojam atskirai, kad tarpai ir
-    # lietuviskos raides veiktu ir GitHub Pages serveryje
-    param([string]$Kelias)
-    $dalys = $Kelias.Split([char]92) | ForEach-Object { [Uri]::EscapeDataString($_) }
-    return ($dalys -join "/")
+function Sumazink {
+    param($Img, [string]$Isvestis, [int]$Riba)
+    $m = [Math]::Min($Riba / $Img.Width, $Riba / $Img.Height)
+    if ($m -gt 1) { $m = 1 }
+    $nw = [int][Math]::Round($Img.Width * $m); $nh = [int][Math]::Round($Img.Height * $m)
+    $bmp = New-Object System.Drawing.Bitmap($nw, $nh)
+    try {
+        $g = [System.Drawing.Graphics]::FromImage($bmp)
+        try {
+            $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+            $g.SmoothingMode     = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+            $g.PixelOffsetMode   = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+            $g.DrawImage($Img, 0, 0, $nw, $nh)
+        } finally { $g.Dispose() }
+        $bmp.Save($Isvestis, $enc, $par)
+    } finally { $bmp.Dispose() }
+    return @($nw, $nh)
 }
 
-# Neprivalomos antrastes: kiekvienoje galerijoje gali guleti pavadinimai.txt,
-# kurio eilutes atrodo taip:   DSC_1234.jpg = Rytas prie juros
-# Jei failo ten nera, antraste nerodoma - failo vardas NIEKADA nenaudojamas.
-$antrastes = @{}
-Get-ChildItem -Path $originalai -Recurse -File -Filter pavadinimai.txt -ErrorAction SilentlyContinue | ForEach-Object {
-    $gal = $_.Directory.FullName.Substring($originalai.Length).TrimStart([char]92)
-    Get-Content $_.FullName -Encoding UTF8 | ForEach-Object {
-        $eil = $_.Trim()
-        if ($eil -and -not $eil.StartsWith("#") -and $eil.Contains("=")) {
-            $k = $eil.Substring(0, $eil.IndexOf("=")).Trim()
-            $v = $eil.Substring($eil.IndexOf("=") + 1).Trim()
-            $antrastes["$gal|$k"] = $v
+function SkaitykPoras {
+    param([string]$Kelias)
+    $h = @{}
+    if (Test-Path -LiteralPath $Kelias) {
+        Get-Content -LiteralPath $Kelias -Encoding UTF8 | ForEach-Object {
+            $e = $_.Trim()
+            if ($e -and -not $e.StartsWith("#") -and $e.Contains("=")) {
+                $i = $e.IndexOf("=")
+                $h[$e.Substring(0,$i).Trim()] = $e.Substring($i+1).Trim()
+            }
         }
     }
+    return $h
 }
 
-# Atranka: photos_originalaitranka.txt isvardija geriausias nuotraukas.
-# Jos papildomai rodomos atskiroje sekcijoje puslapio virsuje.
-$atranka = @{}
-$atrankaEile = @{}
-$atrankaFailas = Join-Path $originalai "atranka.txt"
-if (Test-Path -LiteralPath $atrankaFailas) {
+function UrlKelias { param([string]$K) return (($K.Split([char]92) | ForEach-Object { [Uri]::EscapeDataString($_) }) -join "/") }
+function Htm { param([string]$T) return [System.Net.WebUtility]::HtmlEncode($T) }
+
+# --- atranka ---
+$atrankaNr = @{}
+$af = Join-Path $originalai "atranka.txt"
+if (Test-Path -LiteralPath $af) {
     $nr = 0
-    Get-Content -LiteralPath $atrankaFailas -Encoding UTF8 | ForEach-Object {
+    Get-Content -LiteralPath $af -Encoding UTF8 | ForEach-Object {
         $e = $_.Trim()
-        if ($e -and -not $e.StartsWith("#")) { $atranka[$e] = $true; $atrankaEile[$e] = $nr; $nr++ }
+        if ($e -and -not $e.StartsWith("#")) { $atrankaNr[$e] = $nr; $nr++ }
     }
 }
 
-$irasai   = New-Object System.Collections.Generic.List[string]
-$nauji    = 0
-$praleisti = 0
+# --- apdorojam nuotraukas ---
+$visos = @()
+$nauji = 0; $praleisti = 0
 
-$failai = Get-ChildItem -Path $originalai -Recurse -File |
-          Where-Object { $_.Extension -match '^[.](jpg|jpeg)$' -and $_.Directory.Name -notlike "_*" } |
-          Sort-Object FullName
+$galerijos = Get-ChildItem -Path $originalai -Directory | Where-Object { $_.Name -notlike "_*" }
+foreach ($gal in $galerijos) {
+    $antrastes = SkaitykPoras (Join-Path $gal.FullName "pavadinimai.txt")
+    $altai     = SkaitykPoras (Join-Path $gal.FullName "alt.txt")
 
-if ($failai.Count -eq 0) {
-    Write-Host ""
-    Write-Host "photos\_originalai\ tuscias." -ForegroundColor Yellow
-    Write-Host "Sudek ten nuotraukas, kiekviena galerija - i savo poaplanki, pvz.:"
-    Write-Host "    photos\_originalai\Portugalija\DSC_1234.jpg"
-    Write-Host ""
-}
+    $failai = Get-ChildItem -Path $gal.FullName -File |
+              Where-Object { $_.Extension -match '^[.](jpg|jpeg)$' } | Sort-Object Name
 
-foreach ($f in $failai) {
+    foreach ($f in $failai) {
+        $rel = Join-Path $gal.Name ([System.IO.Path]::ChangeExtension($f.Name, ".jpg"))
+        $fk = Join-Path $full $rel; $tk = Join-Path $thumb $rel
+        foreach ($d in @((Split-Path $fk -Parent), (Split-Path $tk -Parent))) {
+            if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
+        }
 
-    $rel      = $f.FullName.Substring($originalai.Length).TrimStart('\')
-    $galerija = Split-Path $rel -Parent
-    if ([string]::IsNullOrWhiteSpace($galerija)) { $galerija = "" }
-
-    $relJpg      = [System.IO.Path]::ChangeExtension($rel, ".jpg")
-    $fullKelias  = Join-Path $full  $relJpg
-    $thumbKelias = Join-Path $thumb $relJpg
-
-    foreach ($d in @((Split-Path $fullKelias -Parent), (Split-Path $thumbKelias -Parent))) {
-        if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
-    }
-
-    $reikia = $true
-    if ((Test-Path $fullKelias) -and (Test-Path $thumbKelias)) {
-        if ((Get-Item $fullKelias).LastWriteTime -ge $f.LastWriteTime) { $reikia = $false }
-    }
-
-    $w = 0; $h = 0
-    try {
+        $reikia = -not ((Test-Path $fk) -and (Test-Path $tk) -and ((Get-Item $fk).LastWriteTime -ge $f.LastWriteTime))
         if ($reikia) {
             $img = [System.Drawing.Image]::FromFile($f.FullName)
-            TaisykOrientacija -Img $img
             try {
-                $d1 = Sumazink -Img $img -Isvestis $fullKelias  -Riba $FullDydis
-                $null = Sumazink -Img $img -Isvestis $thumbKelias -Riba $ThumbDydis
-                $w = $d1[0]; $h = $d1[1]
+                TaisykOrientacija -Img $img
+                $null = Sumazink -Img $img -Isvestis $fk -Riba $FullDydis
+                $null = Sumazink -Img $img -Isvestis $tk -Riba $ThumbDydis
             } finally { $img.Dispose() }
             $nauji++
-            Write-Host ("  + {0}  -> {1}x{2}" -f $relJpg, $w, $h)
-        } else {
-            $img = [System.Drawing.Image]::FromFile($fullKelias)
-            try { $w = $img.Width; $h = $img.Height } finally { $img.Dispose() }
-            $praleisti++
+            Write-Host ("  + {0}" -f $rel)
+        } else { $praleisti++ }
+
+        $ti = [System.Drawing.Image]::FromFile($tk)
+        try { $tw = $ti.Width; $th = $ti.Height } finally { $ti.Dispose() }
+
+        $visos += [pscustomobject]@{
+            Galerija = $gal.Name
+            Failas   = $f.Name
+            Full     = "photos/full/"  + (UrlKelias $rel)
+            Thumb    = "photos/thumb/" + (UrlKelias $rel)
+            Antraste = $(if ($antrastes.ContainsKey($f.Name)) { $antrastes[$f.Name] } else { "" })
+            Alt      = $(if ($altai.ContainsKey($f.Name)) { $altai[$f.Name] } else { "TODO: describe this photograph" })
+            W        = $tw
+            H        = $th
+            AtrNr    = $(if ($atrankaNr.ContainsKey($f.Name)) { $atrankaNr[$f.Name] } else { -1 })
         }
-    } catch {
-        Write-Host ("  ! nepavyko: {0} - {1}" -f $rel, $_.Exception.Message) -ForegroundColor Red
-        continue
     }
-
-    $raktas = "$galerija|$($f.Name)"
-    $pavadinimas = ""
-    if ($antrastes.ContainsKey($raktas)) { $pavadinimas = $antrastes[$raktas] }
-
-    $j = [ordered]@{
-        full        = ("photos/full/"  + (UrlKelias $relJpg))
-        thumb       = ("photos/thumb/" + (UrlKelias $relJpg))
-        pavadinimas = $pavadinimas
-        galerija    = $galerija
-        atranka     = [bool]$atranka[$f.Name]
-        atrankaNr   = $(if ($atrankaEile.ContainsKey($f.Name)) { $atrankaEile[$f.Name] } else { -1 })
-        w           = $w
-        h           = $h
-    } | ConvertTo-Json -Compress
-
-    $irasai.Add("  $j")
 }
 
-$out = Join-Path $saknis "photos.js"
-$turinys = "// Sugeneruota automatiskai - ranka neredaguoti.`r`n" +
-           "// Perkurti: powershell -ExecutionPolicy Bypass -File tools\paruosti-nuotraukas.ps1`r`n" +
-           "window.PHOTOS = [`r`n" + ($irasai -join ",`r`n") + "`r`n];`r`n"
-[System.IO.File]::WriteAllText($out, $turinys, (New-Object System.Text.UTF8Encoding($false)))
+# --- statinis HTML ---
+$sb = New-Object System.Text.StringBuilder
+$eilNr = 0
+$viso = $visos.Count
+
+foreach ($s in $SEKCIJOS) {
+    if ($s.id -eq "selected") {
+        $grupe = @($visos | Where-Object { $_.AtrNr -ge 0 } | Sort-Object AtrNr)
+        $kiekis = "{0} of {1} photographs" -f $grupe.Count, $viso
+    } else {
+        $grupe = @($visos | Where-Object { $_.Galerija -eq $s.vardas })
+        $kiekis = "{0} photograph{1}" -f $grupe.Count, $(if ($grupe.Count -eq 1) { "" } else { "s" })
+    }
+    if ($grupe.Count -eq 0) { continue }
+
+    [void]$sb.AppendLine("<section class=""sekcija"" id=""$($s.id)"">")
+    [void]$sb.AppendLine("  <div class=""sekcija__juosta"">")
+    [void]$sb.AppendLine("    <h2>$(Htm $s.h2)</h2>")
+    [void]$sb.AppendLine("    <p>$(Htm $s.tekstas)</p>")
+    [void]$sb.AppendLine("    <span class=""sekcija__kiekis"">$kiekis</span>")
+    [void]$sb.AppendLine("    <div class=""lankas""></div>")
+    [void]$sb.AppendLine("  </div>")
+    [void]$sb.AppendLine("  <div class=""galerija"">")
+
+    foreach ($p in $grupe) {
+        $eilNr++
+        $kr = if ($eilNr -le 2) { ' loading="eager" fetchpriority="high"' } else { ' loading="lazy"' }
+        [void]$sb.AppendLine("    <figure class=""tile"" tabindex=""0"" data-full=""$($p.Full)"">")
+        [void]$sb.AppendLine("      <img src=""$($p.Thumb)"" alt=""$(Htm $p.Alt)"" width=""$($p.W)"" height=""$($p.H)""$kr decoding=""async"">")
+        if ($p.Antraste) { [void]$sb.AppendLine("      <figcaption>$(Htm $p.Antraste)</figcaption>") }
+        [void]$sb.AppendLine("    </figure>")
+    }
+
+    [void]$sb.AppendLine("  </div>")
+    [void]$sb.AppendLine("</section>")
+}
+
+# --- iterpiam i index.html ---
+$ix = Join-Path $saknis "index.html"
+$h = [System.IO.File]::ReadAllText($ix)
+$pr = "<!-- GALLERY:START -->"; $pb = "<!-- GALLERY:END -->"
+$i = $h.IndexOf($pr); $j = $h.IndexOf($pb)
+if ($i -lt 0 -or $j -lt 0) { throw "index.html truksta zymes $pr / $pb" }
+$naujas = $h.Substring(0, $i + $pr.Length) + "`r`n" + $sb.ToString() + $h.Substring($j)
+[System.IO.File]::WriteAllText($ix, $naujas, (New-Object System.Text.UTF8Encoding($false)))
 
 Write-Host ""
 Write-Host "-------------------------------------------"
-Write-Host ("Nuotrauku:  {0}" -f $failai.Count)
-Write-Host ("Naujai apdorota: {0}, praleista (jau buvo): {1}" -f $nauji, $praleisti)
-Write-Host ("photos.js atnaujintas")
+Write-Host ("Nuotrauku:   {0}" -f $viso)
+Write-Host ("Apdorota:    {0} nauju, {1} praleista" -f $nauji, $praleisti)
+Write-Host ("Be alt teksto: {0}" -f (@($visos | Where-Object { $_.Alt -like "TODO*" }).Count))
+Write-Host ("index.html:  galerijos iterptos")
 Write-Host "-------------------------------------------"

@@ -1,6 +1,6 @@
-﻿/* Service worker: puslapis veikia ir be interneto.
+/* Service worker: puslapis veikia ir be interneto.
    Pakeitus failus butina padidinti VERSIJA - kitaip telefonas rodys sena. */
-const VERSIJA = 'photography-v8';
+const VERSIJA = 'photography-v9';
 const MAX_NUOTRAUKU = 80;   // kiek nuotrauku laikom talpykloje
 
 const APVALKALAS = [
@@ -8,7 +8,7 @@ const APVALKALAS = [
   './index.html',
   './assets/style.css',
   './assets/app.js',
-  './photos.js',
+
   './manifest.json',
   './404.html',
   './og-image.png',

@@ -1,157 +1,91 @@
+/* Lightbox. Galerijos jau yra HTML'e - sis failas jokio turinio nekuria,
+   tik prisikabina prie esamo DOM. */
 (function () {
   'use strict';
 
-  var photos = (window.PHOTOS || []).slice();
-  var main = document.getElementById('work');
+  var plyteles = Array.prototype.slice.call(document.querySelectorAll('.tile'));
+  if (!plyteles.length) return;
 
-  document.getElementById('metai').textContent = new Date().getFullYear();
-
-  /* Sekcijų tvarka ir jų paaiškinimai. Galerijos vardas ateina iš
-     aplanko pavadinimo photos/_originalai/<vardas>/ */
-  var SELECTED = { id:"selected", antraste:"Selected",
-      tekstas:"Twenty frames I would show first." };
-
-  var SEKCIJOS = [
-    { id:"travel",   vardas:"Travel",   antraste:"Travel",
-      tekstas:"Roads, cities and coastlines — from the medinas of Marrakech to Death Valley." },
-    { id:"wildlife", vardas:"Wildlife", antraste:"Wildlife",
-      tekstas:"Tanzania: patience, distance, and light you cannot plan for." },
-    { id:"people",   vardas:"People",   antraste:"People",
-      tekstas:"Portraits and moments that happened by themselves." }
-  ];
-
-  var rodomi = [];   // visos nuotraukos ta pačia tvarka, kaip puslapyje
-  var current = 0;
-
-  if (!photos.length) {
-    main.innerHTML = '<p class="empty">No photographs yet. Put them in ' +
-      '<code>photos/_originalai/&lt;Gallery&gt;/</code> and run ' +
-      '<code>tools/paruosti-nuotraukas.ps1</code>.</p>';
-    return;
-  }
-
-  function forma(n) { return n === 1 ? "photograph" : "photographs"; }
-
-  /* --- Sekcijų piešimas ---------------------------------------------- */
-  function piesk(s, grupe) {
-    if (!grupe.length) return;
-
-    var sec = document.createElement('section');
-    sec.className = 'sekcija';
-    sec.id = s.id;
-
-    var juosta = document.createElement('div');
-    juosta.className = 'sekcija__juosta';
-    juosta.innerHTML =
-      '<h2>' + s.antraste + '</h2>' +
-      '<p>' + s.tekstas + '</p>' +
-      '<span class="sekcija__kiekis">' +
-        (s.id === 'selected'
-          ? grupe.length + ' of ' + photos.length + ' ' + forma(photos.length)
-          : grupe.length + ' ' + forma(grupe.length)) +
-      '</span>' +
-      '<div class="lankas"></div>';
-    sec.appendChild(juosta);
-
-    var grid = document.createElement('div');
-    grid.className = 'galerija';
-
-    grupe.forEach(function (p) {
-      var indeksas = rodomi.length;
-      rodomi.push({ p: p, sekcija: s.antraste, nr: grupe.indexOf(p) + 1, viso: grupe.length });
-
-      var fig = document.createElement('figure');
-      fig.className = 'tile';
-      fig.tabIndex = 0;
-
-      var img = document.createElement('img');
-      img.src = p.thumb;
-      img.alt = p.pavadinimas || 'Photograph';
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      img.addEventListener('load', function () { img.classList.add('loaded'); });
-      if (img.complete) img.classList.add('loaded');
-      fig.appendChild(img);
-
-      if (p.pavadinimas) {
-        var cap = document.createElement('figcaption');
-        cap.textContent = p.pavadinimas;
-        fig.appendChild(cap);
-      }
-
-      fig.addEventListener('click', function () { open(indeksas); });
-      fig.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(indeksas); }
-      });
-
-      grid.appendChild(fig);
-    });
-
-    sec.appendChild(grid);
-    main.appendChild(sec);
-  }
-
-  // Atranka pirma: tos pačios nuotraukos, tik atrinktos ir savo tvarka.
-  var atrinktos = photos
-    .filter(function (p) { return p.atranka; })
-    .sort(function (a, b) { return a.atrankaNr - b.atrankaNr; });
-  piesk(SELECTED, atrinktos);
-
-  // Po jos - pilnos temos.
-  SEKCIJOS.forEach(function (s) {
-    piesk(s, photos.filter(function (p) { return p.galerija === s.vardas; }));
-  });
-
-  /* --- Lightbox ------------------------------------------------------ */
-  var lb = document.getElementById('lightbox');
+  var lb    = document.getElementById('lightbox');
   var lbImg = document.getElementById('lbImg');
   var lbCap = document.getElementById('lbCaption');
+  if (!lb || !lbImg) return;
+
+  /* Kiekvienai plytelei - jos vieta savo sekcijoje, kad skaitiklis rodytu
+     "3 / 48", o ne bendra numeri per visa puslapi. */
+  var irasai = plyteles.map(function (fig) {
+    var sec  = fig.closest('.sekcija');
+    var savos = sec ? Array.prototype.slice.call(sec.querySelectorAll('.tile')) : [fig];
+    var cap  = fig.querySelector('figcaption');
+    var img  = fig.querySelector('img');
+    var h2   = sec ? sec.querySelector('h2') : null;
+    return {
+      fig:      fig,
+      full:     fig.getAttribute('data-full'),
+      alt:      img ? img.getAttribute('alt') : '',
+      antraste: cap ? cap.textContent : '',
+      sekcija:  h2 ? h2.textContent : '',
+      nr:       savos.indexOf(fig) + 1,
+      viso:     savos.length
+    };
+  });
+
+  var dabar = 0;
   var grazintiFokusa = null;
 
-  function open(i) {
-    current = i;
-    grazintiFokusa = main.querySelectorAll('.tile')[i] || null;
-    show();
+  function rodyk() {
+    var r = irasai[dabar];
+    lbImg.src = r.full;
+    lbImg.alt = r.alt;
+    lbCap.innerHTML = '';
+    lbCap.appendChild(document.createTextNode(r.antraste));
+    var meta = document.createElement('span');
+    meta.textContent = r.sekcija + '  \u00b7  ' + r.nr + ' / ' + r.viso;
+    lbCap.appendChild(meta);
+
+    [dabar - 1, dabar + 1].forEach(function (n) {
+      if (irasai[n]) { var pre = new Image(); pre.src = irasai[n].full; }
+    });
+  }
+
+  function atidaryk(i) {
+    dabar = i;
+    grazintiFokusa = irasai[i].fig;
+    rodyk();
     lb.hidden = false;
     document.body.style.overflow = 'hidden';
     document.getElementById('lbClose').focus();
   }
 
-  function close() {
+  function uzdaryk() {
     lb.hidden = true;
     lbImg.removeAttribute('src');
     document.body.style.overflow = '';
     if (grazintiFokusa) grazintiFokusa.focus();
   }
 
-  function show() {
-    var irasas = rodomi[current];
-    var p = irasas.p;
-    lbImg.src = p.full;
-    lbImg.alt = p.pavadinimas || 'Nuotrauka';
-    lbCap.innerHTML = '';
-    lbCap.appendChild(document.createTextNode(p.pavadinimas || ''));
-    var meta = document.createElement('span');
-    meta.textContent = irasas.sekcija + '  ·  ' + irasas.nr + ' / ' + irasas.viso;
-    lbCap.appendChild(meta);
-
-    [current - 1, current + 1].forEach(function (n) {
-      if (rodomi[n]) { var pre = new Image(); pre.src = rodomi[n].p.full; }
-    });
+  function zingsnis(d) {
+    dabar = (dabar + d + irasai.length) % irasai.length;
+    rodyk();
   }
 
-  function step(d) { current = (current + d + rodomi.length) % rodomi.length; show(); }
+  irasai.forEach(function (r, i) {
+    r.fig.addEventListener('click', function () { atidaryk(i); });
+    r.fig.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); atidaryk(i); }
+    });
+  });
 
-  document.getElementById('lbClose').addEventListener('click', close);
-  document.getElementById('lbPrev').addEventListener('click', function () { step(-1); });
-  document.getElementById('lbNext').addEventListener('click', function () { step(1); });
-  lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+  document.getElementById('lbClose').addEventListener('click', uzdaryk);
+  document.getElementById('lbPrev').addEventListener('click', function () { zingsnis(-1); });
+  document.getElementById('lbNext').addEventListener('click', function () { zingsnis(1); });
+  lb.addEventListener('click', function (e) { if (e.target === lb) uzdaryk(); });
 
   document.addEventListener('keydown', function (e) {
     if (lb.hidden) return;
-    if (e.key === 'Escape') { close(); return; }
-    if (e.key === 'ArrowLeft')  { step(-1); return; }
-    if (e.key === 'ArrowRight') { step(1);  return; }
+    if (e.key === 'Escape')     { uzdaryk();    return; }
+    if (e.key === 'ArrowLeft')  { zingsnis(-1); return; }
+    if (e.key === 'ArrowRight') { zingsnis(1);  return; }
     if (e.key === 'Tab') {
       var m = lb.querySelectorAll('button');
       if (!m.length) return;
@@ -161,13 +95,12 @@
     }
   });
 
-  /* --- Braukimas telefone -------------------------------------------- */
   var x0 = null;
   lb.addEventListener('touchstart', function (e) { x0 = e.changedTouches[0].clientX; }, { passive: true });
   lb.addEventListener('touchend', function (e) {
     if (x0 === null) return;
     var dx = e.changedTouches[0].clientX - x0;
-    if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 50) zingsnis(dx < 0 ? 1 : -1);
     x0 = null;
   }, { passive: true });
 })();
