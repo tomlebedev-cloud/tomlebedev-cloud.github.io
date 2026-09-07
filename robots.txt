@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://tomlebedev-cloud.github.io/sitemap.xml
+Sitemap: https://tomaslebedevas.photography/sitemap.xml
