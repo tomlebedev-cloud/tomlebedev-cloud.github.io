@@ -104,3 +104,57 @@
     x0 = null;
   }, { passive: true });
 })();
+
+/* Kurioje sekcijoje esam. Puslapis ilgas (kelios tukstantys pikseliu),
+   tad navigacijoje pazymim dabartine sekcija. */
+(function () {
+  'use strict';
+
+  var nuorodos = Array.prototype.slice.call(
+    document.querySelectorAll('.site-header nav a[href^="#"]')
+  );
+  if (!nuorodos.length) return;
+
+  var taikiniai = nuorodos
+    .map(function (a) {
+      return { a: a, el: document.getElementById(a.getAttribute('href').slice(1)) };
+    })
+    .filter(function (t) { return t.el; });
+  if (!taikiniai.length) return;
+
+  var laukiam = false;
+
+  function zymek() {
+    laukiam = false;
+
+    /* Riba - lipnios antrastes apacia. Aktyvi ta sekcija, kurios virsus
+       jau prazygiavo pro ja. */
+    var riba = document.querySelector('.site-header').getBoundingClientRect().height + 1;
+    var aktyvus = null;
+
+    taikiniai.forEach(function (t) {
+      if (t.el.getBoundingClientRect().top <= riba) aktyvus = t;
+    });
+
+    /* Pasiekus puslapio apacia paskutine sekcija gali taip ir nepersiristi
+       per riba - tada zymim ja. */
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+      aktyvus = taikiniai[taikiniai.length - 1];
+    }
+
+    taikiniai.forEach(function (t) {
+      if (t === aktyvus) t.a.setAttribute('aria-current', 'true');
+      else t.a.removeAttribute('aria-current');
+    });
+  }
+
+  function planuok() {
+    if (laukiam) return;
+    laukiam = true;
+    window.requestAnimationFrame(zymek);
+  }
+
+  window.addEventListener('scroll', planuok, { passive: true });
+  window.addEventListener('resize', planuok, { passive: true });
+  zymek();
+})();

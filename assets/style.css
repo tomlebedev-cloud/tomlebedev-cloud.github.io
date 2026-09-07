@@ -21,6 +21,14 @@
 
   --max: 1440px;
   --tarpas: 14px;
+
+  /* Galerijos stulpeliu kiekis. Keiciamas per media uzklausas ir
+     atskirai "Selected work" sekcijai, todel visur tik viena vieta. */
+  --stulpeliai: 4;
+
+  /* Lipni antraste. Naudojama ir sekciju scroll-margin skaiciavimui,
+     kad nuoroda i #travel nenuslinktu po antraste. */
+  --antrastes-h: 80px;
 }
 
 *{box-sizing:border-box}
@@ -50,13 +58,17 @@ img{max-width:100%}
 .site-header nav{display:flex;gap:26px;font-size:14px;letter-spacing:.02em}
 .site-header nav a{color:var(--ant-tamsios-svelnus);padding-bottom:3px;border-bottom:1px solid transparent}
 .site-header nav a:hover{color:var(--ant-tamsios);border-bottom-color:var(--ant-tamsios)}
+/* Kurioje sekcijoje esam - zymi app.js. Puslapis ilgas, be to
+   pasimeti nesunku. */
+.site-header nav a[aria-current="true"]{color:var(--ant-tamsios);border-bottom-color:var(--ant-tamsios)}
 
 /* --- Įžanga -------------------------------------------------------- */
 .iznaga{
   background:var(--tamsi);color:var(--ant-tamsios);
   text-align:center;
-  padding:88px 28px 150px;
+  padding:72px 28px 112px;
   position:relative;
+  overflow:hidden;   /* apkerpam lanka, kad puslapis neslinktu i sonus */
 }
 .iznaga h1{
   font-family:var(--serif);
@@ -71,7 +83,9 @@ img{max-width:100%}
 }
 
 /* Lenktas perėjimas iš tamsios juostos į kreminę.
-   Elipsė platesnė už ekraną, todėl lankas švelnus. */
+   Elipsė platesnė už ekraną, todėl lankas švelnus.
+   Lankus paliekam tik kaip puslapio skliaustus - virsuje ir apacioje.
+   Sekciju juostose jie kartojosi keturis kartus ir virto sablonu. */
 .lankas{
   position:absolute;left:-10%;right:-10%;bottom:-1px;
   height:110px;
@@ -84,13 +98,17 @@ img{max-width:100%}
 }
 
 /* --- Sekcija ------------------------------------------------------- */
-.sekcija{margin:0 0 10px}
+.sekcija{
+  margin:0 0 10px;
+  /* Kad #travel ir kt. nuorodos nenuslystu po lipnia antraste. */
+  scroll-margin-top:var(--antrastes-h);
+}
 
 .sekcija__juosta{
   position:relative;
   background:var(--tamsi);color:var(--ant-tamsios);
   text-align:center;
-  padding:120px 28px 130px;
+  padding:68px 28px 76px;
 }
 .sekcija__juosta h2{
   font-family:var(--serif);
@@ -103,33 +121,42 @@ img{max-width:100%}
   color:var(--ant-tamsios-svelnus);
   font-size:.98rem;letter-spacing:.02em;
 }
+/* Be opacity: su .7 kontrastas buvo 3.6:1, o tai maziausias
+   ir labiausiai isretintas tekstas puslapyje. Dabar 5.6:1. */
 .sekcija__kiekis{
   display:block;margin-top:16px;
   font-size:12px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--ant-tamsios-svelnus);opacity:.7;
+  color:var(--ant-tamsios-svelnus);
 }
+/* Sekciju juostose lanko nerodom - liko tik hero ir puslapio gale. */
+.sekcija .lankas{display:none}
 
 /* --- Galerija ------------------------------------------------------ */
+/* Murinis isdestymas. Nuotrauku proporcijos ivairios (3:2, 4:5, staciai),
+   o tinklelyje su vienoda eilute auksciausias kadras diktavo eiles auksti
+   ir po zemesniais likdavo iki 26% tusciu vietu. Stulpeliai supakuoja be
+   tarpu ir nieko neapkarpo - kaina tik ta, kad skaitymo eile vertikali. */
 .galerija{
   max-width:var(--max);
   margin:0 auto;
-  padding:64px calc(40px + env(safe-area-inset-left)) 84px calc(40px + env(safe-area-inset-right));
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:var(--tarpas);
-  align-items:start;
+  padding:56px calc(40px + env(safe-area-inset-left)) 76px calc(40px + env(safe-area-inset-right));
+  column-count:var(--stulpeliai);
+  column-gap:var(--tarpas);
 }
+/* Kuruota atranka - platesni kadrai, maziau stulpeliu. */
+#selected .galerija{--stulpeliai:3;max-width:1180px}
+
 .tile{
-  margin:0;padding:0;border:0;
+  break-inside:avoid;
+  margin:0 0 var(--tarpas);padding:0;border:0;
   position:relative;overflow:hidden;
   background:var(--krem-sokis);
   cursor:zoom-in;
 }
 .tile img{
-  width:100%;height:auto;object-fit:contain;display:block;
-  opacity:1;transition:opacity .6s ease,transform .6s ease;
+  width:100%;height:auto;display:block;
+  transition:transform .6s ease;
 }
-.tile img.loaded{opacity:1}
 .tile:hover img{transform:scale(1.035)}
 .tile:focus-visible{outline:2px solid var(--tamsi);outline-offset:3px}
 .tile figcaption{
@@ -142,12 +169,13 @@ img{max-width:100%}
 }
 .tile:hover figcaption,.tile:focus-visible figcaption{opacity:1}
 
-.empty{grid-column:1/-1;text-align:center;color:var(--tekstas-svelnus);padding:60px 0}
+.empty{column-span:all;text-align:center;color:var(--tekstas-svelnus);padding:60px 0}
 .empty code{background:var(--krem-sokis);padding:2px 6px;border-radius:3px;font-size:.9em}
 
 /* --- Apie / kontaktai ---------------------------------------------- */
 .puslapio-galas{
   position:relative;
+  overflow:hidden;   /* tas pats - lankas neturi tempti horizontalios slinkties */
   background:var(--tamsi-gili);color:var(--ant-tamsios);
   padding:140px 28px calc(70px + env(safe-area-inset-bottom));
 }
@@ -198,21 +226,58 @@ img{max-width:100%}
   text-transform:uppercase;opacity:.55;
 }
 
-/* --- Mobilus ------------------------------------------------------- */
+/* --- Platus ekranai ------------------------------------------------ */
+@media(max-width:1200px){
+  :root{--stulpeliai:3}
+  #selected .galerija{--stulpeliai:3}
+}
+@media(max-width:900px){
+  :root{--stulpeliai:2}
+  #selected .galerija{--stulpeliai:2}
+}
+
+/* --- Planšetė / didelis telefonas ----------------------------------- */
 @media(max-width:760px){
+  :root{--antrastes-h:104px}
   .site-header{
     flex-direction:column;gap:12px;
     padding:calc(16px + env(safe-area-inset-top)) 18px 14px;
   }
   .brand{font-size:20px}
   .site-header nav{gap:18px;font-size:13px}
-  .iznaga{padding:60px 20px 110px}
-  .sekcija__juosta{padding:84px 22px 96px}
+  .iznaga{padding:56px 20px 86px}
+  .sekcija__juosta{padding:52px 22px 58px}
   .lankas{height:70px}
-  .galerija{padding:38px 10px 52px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}
+  .galerija{padding:32px 10px 44px;column-gap:8px}
+  .tile{margin-bottom:8px}
   .tile figcaption{display:none}
   .puslapio-galas{padding:100px 22px calc(56px + env(safe-area-inset-bottom))}
   .lb-nav{font-size:36px;padding:10px}
+}
+
+/* --- Telefonas ------------------------------------------------------ */
+/* Kadras dviejuose stulpeliuose su paraštėmis buvo ~174x116 px - per mazas,
+   kad i ji ziuretum. Nuimam sonines paraštes ir daliname pagal paskirti:
+   kuruota atranka - per visa ploti po viena (tie 20 kadru to verti),
+   naršymo sekcijos - po du, kitaip 122 nuotrauku puslapis issitemptu
+   i beveik 50 000 px slinkties. */
+@media(max-width:620px){
+  :root{--stulpeliai:2}
+  .galerija{padding:26px 0 38px;column-gap:3px}
+  .tile{margin-bottom:3px;background:none}
+  .tile:hover img{transform:none}
+
+  #selected .galerija{--stulpeliai:1;padding-bottom:30px}
+  #selected .tile{margin-bottom:24px}
+  /* Pavadinima rodom tik ten, kur kadras pilno plocio - hover telefone
+     neegzistuoja, tad kitaip antrasciu isvis nebutu matyti. */
+  #selected .tile figcaption{
+    display:block;position:static;
+    opacity:1;background:none;
+    color:var(--tekstas-svelnus);
+    padding:9px 18px 0;
+    font-size:.98rem;
+  }
 }
 
 @media(prefers-reduced-motion:reduce){

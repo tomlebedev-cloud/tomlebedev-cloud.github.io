@@ -8,12 +8,13 @@
 
     GAUNI:      photos\full\   2560 px
                 photos\thumb\   700 px
+                photos\thumb-sm\ 400 px  (srcset - telefonams ir ne-retina ekranams)
                 index.html      galerijos tarp GALLERY:START ir GALLERY:END
 
     Paleidimas: powershell -ExecutionPolicy Bypass -File tools\paruosti-nuotraukas.ps1
 #>
 
-param([int]$FullDydis = 2000, [int]$ThumbDydis = 700, [int]$Kokybe = 80)
+param([int]$FullDydis = 2000, [int]$ThumbDydis = 700, [int]$ThumbSmDydis = 400, [int]$Kokybe = 80)
 
 Add-Type -AssemblyName System.Drawing
 $ErrorActionPreference = "Stop"
@@ -22,6 +23,7 @@ $saknis     = Split-Path -Parent $PSScriptRoot
 $originalai = Join-Path $saknis "photos\_originalai"
 $full       = Join-Path $saknis "photos\full"
 $thumb      = Join-Path $saknis "photos\thumb"
+$thumbSm    = Join-Path $saknis "photos\thumb-sm"
 
 # Sekciju tvarka, antrastes ir paaiskinimai
 $SEKCIJOS = @(
@@ -112,17 +114,19 @@ foreach ($gal in $galerijos) {
     foreach ($f in $failai) {
         $rel = Join-Path $gal.Name ([System.IO.Path]::ChangeExtension($f.Name, ".jpg"))
         $fk = Join-Path $full $rel; $tk = Join-Path $thumb $rel
-        foreach ($d in @((Split-Path $fk -Parent), (Split-Path $tk -Parent))) {
+        $sk = Join-Path $thumbSm $rel
+        foreach ($d in @((Split-Path $fk -Parent), (Split-Path $tk -Parent), (Split-Path $sk -Parent))) {
             if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
         }
 
-        $reikia = -not ((Test-Path $fk) -and (Test-Path $tk) -and ((Get-Item $fk).LastWriteTime -ge $f.LastWriteTime))
+        $reikia = -not ((Test-Path $fk) -and (Test-Path $tk) -and (Test-Path $sk) -and ((Get-Item $fk).LastWriteTime -ge $f.LastWriteTime))
         if ($reikia) {
             $img = [System.Drawing.Image]::FromFile($f.FullName)
             try {
                 TaisykOrientacija -Img $img
                 $null = Sumazink -Img $img -Isvestis $fk -Riba $FullDydis
                 $null = Sumazink -Img $img -Isvestis $tk -Riba $ThumbDydis
+                $null = Sumazink -Img $img -Isvestis $sk -Riba $ThumbSmDydis
             } finally { $img.Dispose() }
             $nauji++
             Write-Host ("  + {0}" -f $rel)
@@ -136,6 +140,7 @@ foreach ($gal in $galerijos) {
             Failas   = $f.Name
             Full     = "photos/full/"  + (UrlKelias $rel)
             Thumb    = "photos/thumb/" + (UrlKelias $rel)
+            ThumbSm  = "photos/thumb-sm/" + (UrlKelias $rel)
             Antraste = $(if ($antrastes.ContainsKey($f.Name)) { $antrastes[$f.Name] } else { "" })
             Alt      = $(if ($altai.ContainsKey($f.Name)) { $altai[$f.Name] } else { "TODO: describe this photograph" })
             W        = $tw
@@ -154,9 +159,13 @@ foreach ($s in $SEKCIJOS) {
     if ($s.id -eq "selected") {
         $grupe = @($visos | Where-Object { $_.AtrNr -ge 0 } | Sort-Object AtrNr)
         $kiekis = "{0} of {1} photographs" -f $grupe.Count, $viso
+        # atranka: telefone per visa ploti, desktope 3 stulpeliai
+        $sizes  = "(max-width:620px) 100vw, (max-width:900px) 50vw, (max-width:1220px) 33vw, 380px"
     } else {
         $grupe = @($visos | Where-Object { $_.Galerija -eq $s.vardas })
         $kiekis = "{0} photograph{1}" -f $grupe.Count, $(if ($grupe.Count -eq 1) { "" } else { "s" })
+        # narsymo sekcijos: telefone 2 stulpeliai, desktope 4
+        $sizes  = "(max-width:620px) 50vw, (max-width:900px) 50vw, (max-width:1200px) 33vw, 350px"
     }
     if ($grupe.Count -eq 0) { continue }
 
@@ -172,8 +181,9 @@ foreach ($s in $SEKCIJOS) {
     foreach ($p in $grupe) {
         $eilNr++
         $kr = if ($eilNr -le 2) { ' loading="eager" fetchpriority="high"' } else { ' loading="lazy"' }
-        [void]$sb.AppendLine("    <figure class=""tile"" tabindex=""0"" data-full=""$($p.Full)"">")
-        [void]$sb.AppendLine("      <img src=""$($p.Thumb)"" alt=""$(Htm $p.Alt)"" width=""$($p.W)"" height=""$($p.H)""$kr decoding=""async"">")
+        [void]$sb.AppendLine("    <figure class=""tile"" role=""button"" tabindex=""0"" data-full=""$($p.Full)"">")
+        $srcset = "$($p.ThumbSm) 400w, $($p.Thumb) 700w"
+        [void]$sb.AppendLine("      <img src=""$($p.Thumb)"" srcset=""$srcset"" sizes=""$sizes"" alt=""$(Htm $p.Alt)"" width=""$($p.W)"" height=""$($p.H)""$kr decoding=""async"">")
         if ($p.Antraste) { [void]$sb.AppendLine("      <figcaption>$(Htm $p.Antraste)</figcaption>") }
         [void]$sb.AppendLine("    </figure>")
     }
