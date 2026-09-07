@@ -81,7 +81,7 @@ git push
 Puslapis atsinaujina per ~1 minutę.
 
 > **Keitei `style.css`, `app.js` ar HTML?** Padidink `VERSIJA` failo `sw.js`
-> viršuje (`photography-v15` → `v16`). Service worker talpina senas versijas, ir be
+> viršuje (`photography-v16` → `v16`). Service worker talpina senas versijas, ir be
 > šito grįžtantis lankytojas dar ilgai matys seną puslapį.
 
 ## Peržiūra kompiuteryje
@@ -97,6 +97,17 @@ Atsidaryk `index.html` naršyklėje — veikia ir be serverio.
 | `assets/app.js` | Nuotraukos lango (lightbox) veikimas |
 | `sw.js` | Talpyklos versija — didinti po kiekvieno pakeitimo |
 | `index.html` | Hero nuotrauka, „About“, kontaktai |
+
+### Rankomis prižiūrimi dalykai
+
+Šito skriptas neliečia, tad keisdamas hero nuotrauką ar OG korteles daryk pats:
+
+- **Hero nuotrauka** `index.html` faile turi tris dydžius `photos/hero/`
+  (900, 1400 ir 2000 px). Pakeitęs kadrą sugeneruok visus tris, kitaip
+  telefonas siųsis pilno dydžio failą.
+- **`og:image`** kiekviename puslapyje rodo to darbų kūno nuotrauką —
+  dalinantis nuoroda matosi fotografija, ne bendra kortelė. Tituliniam
+  palikta `og-image.png` su vardu.
 
 > Galerijų HTML tarp `GALLERY:START` ir `GALLERY:END` **generuojamas automatiškai**.
 > Keisdamas plytelių žymėjimą, tą patį pakeitimą daryk ir
