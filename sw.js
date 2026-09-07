@@ -1,6 +1,6 @@
 /* Service worker: puslapis veikia ir be interneto.
    Pakeitus failus butina padidinti VERSIJA - kitaip telefonas rodys sena. */
-const VERSIJA = 'photography-v13';
+const VERSIJA = 'photography-v14';
 const MAX_NUOTRAUKU = 80;   // kiek nuotrauku laikom talpykloje
 
 const APVALKALAS = [

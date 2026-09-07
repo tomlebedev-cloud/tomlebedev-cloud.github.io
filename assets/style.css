@@ -1,20 +1,21 @@
 /* ===================================================================
    Tomas Lebedevas — Fotografija
-   Šilta paletė, serifinė tipografija, teminės sekcijos.
+   Rašalo mėlyna + smėlis, serifinė tipografija, teminės sekcijos.
    =================================================================== */
 
 :root{
-  /* Paletė: espreso ruda + kreminė. Sąmoningai ne juoda —
-     nuotraukos ant šiltos bazės atrodo ramiau. */
-  --tamsi:      #4a4038;
-  --tamsi-gili: #3b332c;
-  --krem:       #f4f1ea;
-  --krem-sokis: #e3dccd;   /* plyteles fonas, kol nuotrauka dar nekrauta */
-  --tekstas:    #2e2823;
-  --tekstas-svelnus: #6f655b;
-  --ant-tamsios: #f4f1ea;
-  --ant-tamsios-svelnus: #c9bfb2;
-  --linija:     #ded6c8;
+  /* Paletė: rašalo mėlyna + smėlis. Mėlyna sąmoningai gili ir
+     prislopinta - tokia tamsi veikia beveik kaip juoda ir nekonkuruoja
+     su kadrais, bet spalva dar atpažįstama. Šiltas smėlis atsveria. */
+  --tamsi:      #182634;
+  --tamsi-gili: #101b26;
+  --krem:       #f2ebdd;
+  --krem-sokis: #e3d8c3;   /* plyteles fonas, kol nuotrauka dar nekrauta */
+  --tekstas:    #182634;
+  --tekstas-svelnus: #5a6672;
+  --ant-tamsios: #f2ebdd;
+  --ant-tamsios-svelnus: #bfc8d2;
+  --linija:     #dccfb7;
 
   --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -28,7 +29,7 @@
 
   /* Lipni antraste. Naudojama ir sekciju scroll-margin skaiciavimui,
      kad nuoroda i #travel nenuslinktu po antraste. */
-  --antrastes-h: 80px;
+  --antrastes-h: 72px;
 }
 
 *{box-sizing:border-box}
@@ -47,13 +48,30 @@ img{max-width:100%}
 .site-header{
   position:sticky;top:0;z-index:60;
   display:flex;align-items:center;justify-content:space-between;gap:24px;
-  padding:calc(20px + env(safe-area-inset-top)) calc(40px + env(safe-area-inset-right)) 20px calc(40px + env(safe-area-inset-left));
+  padding:calc(14px + env(safe-area-inset-top)) calc(40px + env(safe-area-inset-right)) 14px calc(40px + env(safe-area-inset-left));
   background:var(--tamsi);
   color:var(--ant-tamsios);
 }
+/* Vardas ir po juo smulkus "Photography" - identiteto zenklas, o ne
+   viena ilga eilute. Ta pati smulki isretinta tipografija kaip
+   .sekcija__kiekis ir lightbox meta eiluteje. */
 .brand{
+  display:block;
   font-family:var(--serif);
-  font-size:24px;font-weight:500;letter-spacing:.01em;
+  font-size:24px;font-weight:500;letter-spacing:.01em;line-height:1.12;
+}
+.brand span{
+  display:block;
+  margin-top:3px;
+  font-family:var(--sans);
+  font-size:10.5px;font-weight:400;
+  letter-spacing:.26em;text-transform:uppercase;
+  color:var(--ant-tamsios-svelnus);
+  /* Centruojam po vardu. Del letter-spacing po paskutine raide lieka
+     tarpas, todel be sios kompensacijos eilute optiskai pasislinktu
+     i desine. */
+  text-align:center;
+  margin-right:-.26em;
 }
 .site-header nav{display:flex;gap:26px;font-size:14px;letter-spacing:.02em}
 .site-header nav a{color:var(--ant-tamsios-svelnus);padding-bottom:3px;border-bottom:1px solid transparent}
@@ -66,10 +84,12 @@ img{max-width:100%}
 .iznaga{
   background:var(--tamsi);color:var(--ant-tamsios);
   text-align:center;
-  padding:72px 28px 112px;
+  padding:72px 28px 56px;
   position:relative;
-  overflow:hidden;   /* apkerpam lanka, kad puslapis neslinktu i sonus */
+  overflow:hidden;
 }
+/* Hero lankas nebereikalingas: po juo eina tokia pat tamsi juosta. */
+.iznaga .lankas{display:none}
 .iznaga h1{
   font-family:var(--serif);
   margin:0 0 14px;
@@ -84,8 +104,10 @@ img{max-width:100%}
 
 /* Lenktas perėjimas iš tamsios juostos į kreminę.
    Elipsė platesnė už ekraną, todėl lankas švelnus.
-   Lankus paliekam tik kaip puslapio skliaustus - virsuje ir apacioje.
-   Sekciju juostose jie kartojosi keturis kartus ir virto sablonu. */
+   Rodom tik du: viena ten, kur tamsi puslapio pradzia atsiveria i
+   nuotraukas, ir viena puslapio gale. Anksciau ju buvo sesi ir jie
+   virto sablonu; be to hero lankas atsidurdavo tarp dvieju tamsiu
+   juostu ir palikdavo keista smelio ruozeli. */
 .lankas{
   position:absolute;left:-10%;right:-10%;bottom:-1px;
   height:110px;
@@ -128,8 +150,17 @@ img{max-width:100%}
   font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--ant-tamsios-svelnus);
 }
-/* Sekciju juostose lanko nerodom - liko tik hero ir puslapio gale. */
+/* Lankas tik ties pirmaja juosta - ten tamsa atsiveria i nuotraukas. */
 .sekcija .lankas{display:none}
+.sekcija:first-of-type .sekcija__juosta{
+  overflow:hidden;
+  padding-bottom:150px;
+  /* Hero aukstis islenda trupmeninis, o dvi gretimos vienodos spalvos
+     dezes tokiu atveju gali palikti plauko linija. 1px persidengimas
+     ta panaikina - tas pats triukas kaip lanko bottom:-1px. */
+  margin-top:-1px;
+}
+.sekcija:first-of-type .sekcija__juosta .lankas{display:block}
 
 /* --- Galerija ------------------------------------------------------ */
 /* Murinis isdestymas. Nuotrauku proporcijos ivairios (3:2, 4:5, staciai),
@@ -164,7 +195,7 @@ img{max-width:100%}
   padding:30px 16px 14px;
   font-family:var(--serif);
   font-size:1.05rem;letter-spacing:.02em;text-align:left;color:#fff;
-  background:linear-gradient(transparent,rgba(35,29,24,.78));
+  background:linear-gradient(transparent,rgba(12,20,28,.8));
   opacity:0;transition:opacity .3s;
 }
 .tile:hover figcaption,.tile:focus-visible figcaption{opacity:1}
@@ -188,12 +219,12 @@ img{max-width:100%}
 .puslapio-galas p{color:var(--ant-tamsios-svelnus);margin:0 0 16px}
 .puslapio-galas a.pastas{
   font-family:var(--serif);font-size:1.3rem;
-  color:var(--ant-tamsios);border-bottom:1px solid rgba(244,241,234,.35);
+  color:var(--ant-tamsios);border-bottom:1px solid rgba(242,235,221,.35);
   padding-bottom:3px;
 }
 .puslapio-galas a.pastas:hover{border-bottom-color:var(--ant-tamsios)}
 .skyrikis{
-  width:46px;height:1px;background:rgba(244,241,234,.3);
+  width:46px;height:1px;background:rgba(242,235,221,.3);
   margin:34px auto;
 }
 .fine{font-size:12.5px;letter-spacing:.04em;opacity:.6}
@@ -202,7 +233,7 @@ img{max-width:100%}
 .lightbox{
   position:fixed;inset:0;z-index:100;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(30,25,21,.975);
+  background:rgba(10,17,24,.975);
 }
 .lightbox[hidden]{display:none}
 .lightbox img{max-width:92vw;max-height:84vh;object-fit:contain}
@@ -238,15 +269,17 @@ img{max-width:100%}
 
 /* --- Planšetė / didelis telefonas ----------------------------------- */
 @media(max-width:760px){
-  :root{--antrastes-h:104px}
+  :root{--antrastes-h:108px}
   .site-header{
     flex-direction:column;gap:12px;
     padding:calc(16px + env(safe-area-inset-top)) 18px 14px;
   }
   .brand{font-size:20px}
+  .brand span{font-size:9.5px;letter-spacing:.22em}
   .site-header nav{gap:18px;font-size:13px}
-  .iznaga{padding:56px 20px 86px}
+  .iznaga{padding:56px 20px 40px}
   .sekcija__juosta{padding:52px 22px 58px}
+  .sekcija:first-of-type .sekcija__juosta{padding-bottom:100px}
   .lankas{height:70px}
   .galerija{padding:32px 10px 44px;column-gap:8px}
   .tile{margin-bottom:8px}
