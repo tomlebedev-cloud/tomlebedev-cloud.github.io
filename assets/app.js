@@ -24,6 +24,7 @@
       full:     fig.getAttribute('data-full'),
       alt:      img ? img.getAttribute('alt') : '',
       antraste: cap ? cap.textContent : '',
+      vieta:    fig.getAttribute('data-vieta') || '',
       sekcija:  h2 ? h2.textContent : '',
       nr:       savos.indexOf(fig) + 1,
       viso:     savos.length
@@ -40,7 +41,11 @@
     lbCap.innerHTML = '';
     lbCap.appendChild(document.createTextNode(r.antraste));
     var meta = document.createElement('span');
-    meta.textContent = r.sekcija + '  \u00b7  ' + r.nr + ' / ' + r.viso;
+    var dalys = [];
+    if (r.vieta) dalys.push(r.vieta);
+    dalys.push(r.sekcija);
+    dalys.push(r.nr + ' / ' + r.viso);
+    meta.textContent = dalys.join('  \u00b7  ');
     lbCap.appendChild(meta);
 
     [dabar - 1, dabar + 1].forEach(function (n) {
@@ -103,58 +108,4 @@
     if (Math.abs(dx) > 50) zingsnis(dx < 0 ? 1 : -1);
     x0 = null;
   }, { passive: true });
-})();
-
-/* Kurioje sekcijoje esam. Puslapis ilgas (kelios tukstantys pikseliu),
-   tad navigacijoje pazymim dabartine sekcija. */
-(function () {
-  'use strict';
-
-  var nuorodos = Array.prototype.slice.call(
-    document.querySelectorAll('.site-header nav a[href^="#"]')
-  );
-  if (!nuorodos.length) return;
-
-  var taikiniai = nuorodos
-    .map(function (a) {
-      return { a: a, el: document.getElementById(a.getAttribute('href').slice(1)) };
-    })
-    .filter(function (t) { return t.el; });
-  if (!taikiniai.length) return;
-
-  var laukiam = false;
-
-  function zymek() {
-    laukiam = false;
-
-    /* Riba - lipnios antrastes apacia. Aktyvi ta sekcija, kurios virsus
-       jau prazygiavo pro ja. */
-    var riba = document.querySelector('.site-header').getBoundingClientRect().height + 1;
-    var aktyvus = null;
-
-    taikiniai.forEach(function (t) {
-      if (t.el.getBoundingClientRect().top <= riba) aktyvus = t;
-    });
-
-    /* Pasiekus puslapio apacia paskutine sekcija gali taip ir nepersiristi
-       per riba - tada zymim ja. */
-    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
-      aktyvus = taikiniai[taikiniai.length - 1];
-    }
-
-    taikiniai.forEach(function (t) {
-      if (t === aktyvus) t.a.setAttribute('aria-current', 'true');
-      else t.a.removeAttribute('aria-current');
-    });
-  }
-
-  function planuok() {
-    if (laukiam) return;
-    laukiam = true;
-    window.requestAnimationFrame(zymek);
-  }
-
-  window.addEventListener('scroll', planuok, { passive: true });
-  window.addEventListener('resize', planuok, { passive: true });
-  zymek();
 })();

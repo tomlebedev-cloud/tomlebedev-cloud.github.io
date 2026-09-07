@@ -76,30 +76,50 @@ img{max-width:100%}
 .site-header nav{display:flex;gap:26px;font-size:14px;letter-spacing:.02em}
 .site-header nav a{color:var(--ant-tamsios-svelnus);padding-bottom:3px;border-bottom:1px solid transparent}
 .site-header nav a:hover{color:var(--ant-tamsios);border-bottom-color:var(--ant-tamsios)}
-/* Kurioje sekcijoje esam - zymi app.js. Puslapis ilgas, be to
-   pasimeti nesunku. */
-.site-header nav a[aria-current="true"]{color:var(--ant-tamsios);border-bottom-color:var(--ant-tamsios)}
+/* Kuriame puslapyje esam - zymima generuojant HTML. */
+.site-header nav a[aria-current]{color:var(--ant-tamsios);border-bottom-color:var(--ant-tamsios)}
 
-/* --- Įžanga -------------------------------------------------------- */
-.iznaga{
-  background:var(--tamsi);color:var(--ant-tamsios);
-  text-align:center;
-  padding:72px 28px 56px;
+/* --- Titulinio įžanga: nuotrauka per visą plotį ---------------------- */
+/* Fotografo puslapyje pirmas ekranas turi buti fotografija, o ne
+   spalvotas staciakampis. Kadras parinktas blankus ir miglotas -
+   tekstas ant jo gulasi nekonkuruodamas. */
+.hero{
   position:relative;
+  min-height:min(78vh,780px);
+  display:flex;align-items:center;justify-content:center;
   overflow:hidden;
+  background:var(--tamsi);
+  color:var(--ant-tamsios);
 }
-/* Hero lankas nebereikalingas: po juo eina tokia pat tamsi juosta. */
-.iznaga .lankas{display:none}
-.iznaga h1{
+.hero__foto{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+}
+/* Uzdanga: be jos tekstas ant sviesaus dangaus nebutu iskaitomas.
+   Melynas atspalvis riso hero su palete. */
+.hero::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(rgba(24,38,52,.66),rgba(24,38,52,.34) 45%,rgba(24,38,52,.58));
+}
+.hero__vidus{
+  position:relative;z-index:2;
+  text-align:center;
+  padding:96px 28px 132px;
+}
+.hero .lankas{z-index:3}
+.hero h1{
   font-family:var(--serif);
   margin:0 0 14px;
   font-size:clamp(3rem,8vw,6rem);
   font-weight:400;letter-spacing:.04em;line-height:1;
+  text-shadow:0 1px 24px rgba(10,17,24,.5);
 }
-.iznaga p{
+.hero p{
   margin:0 auto;max-width:34em;
-  color:var(--ant-tamsios-svelnus);
+  color:var(--krem);
   font-size:1.02rem;letter-spacing:.02em;
+  text-shadow:0 1px 16px rgba(10,17,24,.6);
 }
 
 /* Lenktas perėjimas iš tamsios juostos į kreminę.
@@ -150,6 +170,15 @@ img{max-width:100%}
   font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--ant-tamsios-svelnus);
 }
+/* Tituliniame po hero nuotrauka tamsi juosta butu per sunki - antraste
+   ten guli ant smelio. Tamsios juostos lieka darbu puslapiams. */
+.sekcija__juosta--sviesi{
+  background:none;color:var(--tekstas);
+  padding:66px 28px 8px;
+}
+.sekcija__juosta--sviesi p{color:var(--tekstas-svelnus)}
+.sekcija__juosta--sviesi .sekcija__kiekis{color:var(--tekstas-svelnus)}
+
 /* Lankas tik ties pirmaja juosta - ten tamsa atsiveria i nuotraukas. */
 .sekcija .lankas{display:none}
 .sekcija:first-of-type .sekcija__juosta{
@@ -202,6 +231,73 @@ img{max-width:100%}
 
 .empty{column-span:all;text-align:center;color:var(--tekstas-svelnus);padding:60px 0}
 .empty code{background:var(--krem-sokis);padding:2px 6px;border-radius:3px;font-size:.9em}
+
+/* --- Darbų kūnai (titulinio įėjimai) -------------------------------- */
+.kunai{
+  max-width:var(--max);
+  margin:0 auto;
+  padding:8px calc(40px + env(safe-area-inset-left)) 104px calc(40px + env(safe-area-inset-right));
+}
+.kunai h2{
+  font-family:var(--serif);
+  font-size:clamp(1.7rem,3vw,2.3rem);
+  font-weight:400;letter-spacing:.1em;text-transform:uppercase;
+  margin:0 0 22px;text-align:center;
+}
+.kunai__eile{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:var(--tarpas);
+}
+.kunas{
+  position:relative;display:block;overflow:hidden;
+  background:var(--krem-sokis);
+}
+.kunas img{
+  width:100%;height:clamp(200px,24vw,300px);
+  object-fit:cover;display:block;
+  transition:transform .6s ease;
+}
+.kunas:hover img{transform:scale(1.04)}
+.kunas:focus-visible{outline:2px solid var(--tamsi);outline-offset:3px}
+.kunas__vardas,.kunas__kiekis{
+  position:relative;z-index:2;display:block;text-align:center;color:#fff;
+}
+/* Uzdanga po tekstu - kitaip vardas ant sviesaus kadro dingtu. */
+.kunas::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:56%;
+  background:linear-gradient(transparent,rgba(12,20,28,.82));
+}
+.kunas__vardas{
+  position:absolute;left:0;right:0;bottom:30px;
+  font-family:var(--serif);font-size:1.6rem;letter-spacing:.06em;
+}
+.kunas__kiekis{
+  position:absolute;left:0;right:0;bottom:14px;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.78);
+}
+
+/* --- Kitas darbų kūnas (puslapio apačioje) -------------------------- */
+.toliau{
+  max-width:var(--max);
+  margin:0 auto;
+  padding:0 calc(40px + env(safe-area-inset-right)) 104px calc(40px + env(safe-area-inset-left));
+  text-align:right;
+}
+.toliau a{
+  display:inline-block;
+  font-family:var(--serif);font-size:1.9rem;letter-spacing:.04em;
+  border-bottom:1px solid var(--linija);padding-bottom:4px;
+}
+.toliau a:hover{border-bottom-color:var(--tekstas)}
+.toliau span{
+  display:block;
+  font-family:var(--sans);font-size:11px;font-weight:400;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--tekstas-svelnus);
+  margin-bottom:4px;
+}
 
 /* --- Apie / kontaktai ---------------------------------------------- */
 .puslapio-galas{
@@ -277,10 +373,19 @@ img{max-width:100%}
   .brand{font-size:20px}
   .brand span{font-size:9.5px;letter-spacing:.22em}
   .site-header nav{gap:18px;font-size:13px}
-  .iznaga{padding:56px 20px 40px}
+  .hero{min-height:min(66vh,560px)}
+  .hero__vidus{padding:64px 20px 96px}
   .sekcija__juosta{padding:52px 22px 58px}
+  .sekcija__juosta--sviesi{padding:44px 22px 4px}
+  /* "Selected work" yra du zodziai - be sito telefone luztu i dvi eilutes */
+  .sekcija__juosta--sviesi h2{font-size:clamp(1.75rem,7vw,4.2rem)}
   .sekcija:first-of-type .sekcija__juosta{padding-bottom:100px}
   .lankas{height:70px}
+  .kunai{padding:4px 14px 72px}
+  .kunai__eile{grid-template-columns:1fr;gap:8px}
+  .kunas img{height:190px}
+  .toliau{padding:0 18px 72px}
+  .toliau a{font-size:1.5rem}
   .galerija{padding:32px 10px 44px;column-gap:8px}
   .tile{margin-bottom:8px}
   .tile figcaption{display:none}
@@ -302,6 +407,9 @@ img{max-width:100%}
 
   #selected .galerija{--stulpeliai:1;padding-bottom:30px}
   #selected .tile{margin-bottom:24px}
+  .kunai{padding-left:0;padding-right:0}
+  .kunai h2{padding:0 18px}
+  .kunas img{height:210px}
   /* Pavadinima rodom tik ten, kur kadras pilno plocio - hover telefone
      neegzistuoja, tad kitaip antrasciu isvis nebutu matyti. */
   #selected .tile figcaption{

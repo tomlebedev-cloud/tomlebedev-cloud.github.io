@@ -1,0 +1,72 @@
+# Puslapiai ir ju nuotraukos. Si rinkmena valdo, kas rodoma svetaineje.
+# Nuotrauka, kurios cia nera, lieka photos/ aplanke, bet i puslapi nepatenka.
+#
+# Puslapio eilute:   == id | failas.html | Vardas | Aprasymas
+# Nuotraukos eilute: Aplankas/failas.jpg | Pavadinimas | Vietove (nebutina)
+#
+# Sekcija 'selected' - titulinio atranka. Ten pakanka keliu, nes
+# pavadinimas paimamas is to puslapio, kuriame nuotrauka aprasyta.
+
+== selected | index.html | Selected work | Twelve frames I would show first.
+Travel/DSC_0059 (2).jpg
+Wildlife/DSC_0916.jpg
+Travel/DSC_0008.jpg
+People/DSC_0683.jpg
+Travel/_DSC0031.jpg
+People/DSC_0080 (2).jpg
+Travel/_DSC0162-2.jpg
+Wildlife/DSC_0154-2.jpg
+People/DSC_0318 (2).jpg
+Travel/_DSC0427.jpg
+Wildlife/DSC_0167-2.jpg
+People/DSC_0519 (2).jpg
+
+== tanzania | tanzania.html | Tanzania | Ngorongoro and the northern parks, 2019. Patience, distance, and light you cannot plan for.
+Wildlife/DSC_0916.jpg | Zebra yawning
+Wildlife/DSC_0234-2.jpg | Zebra portrait
+Wildlife/DSC_0154-2.jpg | Stripes up close
+Wildlife/DSC_0041-3.jpg | Lion in profile
+Wildlife/DSC_0579-2.jpg | Baboon portrait
+Wildlife/DSC_0568-2.jpg | Baboon yawning
+Wildlife/DSC_0684.jpg | Family against the light
+Wildlife/DSC_0167-2.jpg | Hippo and swallow
+Wildlife/DSC_0502-2.jpg | Goose rising from the water
+Wildlife/DSC_0206-2.jpg | Zebra in the rain
+Wildlife/DSC_0931.jpg | By the lake | Ngorongoro
+Wildlife/DSC_0720.jpg | Two elephants | Ngorongoro
+Wildlife/DSC_0393 (2).jpg | Giraffe behind the jeep
+People/February 13, 2019-(Tanzania)-10.jpg | Fisherman at low tide
+People/February 09, 2019-(Tanzania)-13 (2).jpg | Drums by the fire
+
+== morocco | morocco.html | Morocco | Marrakech, the Atlantic coast and the road across the Atlas.
+Travel/DSC_0008.jpg | Marrakech alley | Marrakech
+People/DSC_0146.jpg | Craftsman in the medina
+Travel/DSC_0023 (3).jpg | Promenade in the haze
+People/DSC_0080 (2).jpg | Fishing harbour
+People/DSC_0318 (2).jpg | Fish market
+Travel/DSC_0222 (4).jpg | Road across the Atlas | Atlas Mountains
+People/DSC_0606 (2).jpg | Tea with a view
+People/DSC_0774.jpg | Evening on the hill
+People/DSC_0776 (2).jpg | Together at sunset
+
+== elsewhere | elsewhere.html | Elsewhere | Roads, coastlines and the places in between - from Death Valley to the Hill of Crosses.
+Travel/DSC_0059 (2).jpg | Harbour in the fog
+Travel/DSC_0082.jpg | Sunken boat
+Travel/_DSC0031.jpg | Motorcycles in the desert
+Travel/_DSC0036.jpg | Desert highway
+Travel/_DSC0046.jpg | Roadside stop
+Travel/_DSC0162-2.jpg | Mountains in the mirror
+Travel/_DSC0353.jpg | Golden Gate | San Francisco
+Travel/DSC_2839.jpg | Lone sailboat
+Travel/_DSC0461 (2).jpg | Hill of Crosses | Lithuania
+People/_DSC0463.jpg | Path between the crosses | Lithuania
+Travel/_DSC0427.jpg | Statue among ruins | Whitby
+Travel/_DSC0442.jpg | Graveyard above the town | Whitby
+Travel/DSC_0596.jpg | Light over Naples | Naples
+Travel/DSC_0011 (4).jpg | Marshrutka
+Travel/DSC_0133.jpg | Three in a box
+People/DSC_0007 (3).jpg | Two on the wall
+People/DSC_0378 (2).jpg | Football on the sand
+People/DSC_0519 (2).jpg | Along the shore
+People/DSC_0683.jpg | Clear water
+Travel/DSC_0310 (2).jpg | Two at sunset

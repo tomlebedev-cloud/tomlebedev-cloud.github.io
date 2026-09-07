@@ -1,11 +1,14 @@
 /* Service worker: puslapis veikia ir be interneto.
    Pakeitus failus butina padidinti VERSIJA - kitaip telefonas rodys sena. */
-const VERSIJA = 'photography-v14';
+const VERSIJA = 'photography-v15';
 const MAX_NUOTRAUKU = 80;   // kiek nuotrauku laikom talpykloje
 
 const APVALKALAS = [
   './',
   './index.html',
+  './tanzania.html',
+  './morocco.html',
+  './elsewhere.html',
   './assets/style.css',
   './assets/app.js',
 

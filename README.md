@@ -2,9 +2,21 @@
 
 Statinis puslapis, veikiantis GitHub Pages. Jokių priklausomybių — tik HTML, CSS ir JavaScript.
 
+## Puslapiai
+
+| Failas | Kas ten |
+|---|---|
+| `index.html` | Titulinis: nuotrauka-hero, atranka, įėjimai į darbų kūnus |
+| `tanzania.html` | Tanzania |
+| `morocco.html` | Morocco |
+| `elsewhere.html` | Elsewhere |
+
+Darbai suskirstyti pagal **vietą**, ne pagal žanrą. Viena kelionė lieka vientisa —
+anksčiau ta pati Tanzanija buvo išdraskyta tarp „Wildlife“ ir „People“.
+
 ## Kaip pridėti nuotraukų
 
-**1. Eksportuok iš Lightroom** į `photos/_originalai/<Galerijos pavadinimas>/`
+**1. Eksportuok iš Lightroom** į `photos/_originalai/<Aplankas>/`
 
 Lightroom eksporto nustatymai:
 
@@ -17,27 +29,48 @@ Lightroom eksporto nustatymai:
 | Metadata | *Copyright & Contact Info Only* |
 | ☑ Remove Location Info | **būtinai pažymėk** |
 
-Galerija = aplanko pavadinimas. Pavyzdžiui:
+Aplanko pavadinimas svetainėje nebematomas — jis tik rikiuoja failus diske.
+Kur nuotrauka pateks, sprendžia `photos/puslapiai.txt`.
+
+**2. Aprašyk nuotrauką**
+
+`photos/_originalai/<Aplankas>/alt.txt` — alt tekstas ekrano skaitytuvams ir SEO:
 
 ```
-photos/_originalai/Portugalija/DSC_1234.jpg
-photos/_originalai/Šachmatai/DSC_5678.jpg
+DSC_1234.jpg = A zebra facing the camera with its mouth wide open, Tanzania
 ```
 
-**2. Paleisk paruošimo skriptą**
+**3. Įtrauk į puslapį**
+
+`photos/puslapiai.txt` valdo, kas ir kokia tvarka rodoma:
+
+```
+== tanzania | tanzania.html | Tanzania | Ngorongoro and the northern parks, 2019.
+Wildlife/DSC_1234.jpg | Zebra yawning
+Wildlife/DSC_0931.jpg | By the lake | Ngorongoro
+```
+
+Trečias laukas — vietovė — nebūtinas. Jei jis yra, rodomas nuotraukos lange
+po pavadinimu. Sekcija `== selected` yra titulinio atranka; ten pakanka kelio,
+nes pavadinimas paimamas iš to puslapio, kuriame nuotrauka aprašyta.
+
+**Nuotrauka, kurios `puslapiai.txt` nėra, lieka diske, bet svetainėje nerodoma.**
+Taip atranką galima keisti nieko netrinant.
+
+**4. Paleisk paruošimo skriptą**
 
 ```
 powershell -ExecutionPolicy Bypass -File tools\paruosti-nuotraukas.ps1
 ```
 
-Jis sukuria `photos/full/` (2560 px), `photos/thumb/` (700 px) ir `photos/thumb-sm/` (400 px)
-bei įrašo galerijas tiesiai į `index.html` tarp `GALLERY:START` ir `GALLERY:END`.
-Jau apdorotas nuotraukas praleidžia, todėl paleisti pakartotinai yra greita.
+Jis sukuria `photos/full/` (2000 px), `photos/thumb/` (700 px) ir
+`photos/thumb-sm/` (400 px) bei įrašo galerijas į visus keturis puslapius
+tarp `GALLERY:START` ir `GALLERY:END`. Jau apdorotas nuotraukas praleidžia.
 
 Dvi miniatiūrų versijos reikalingos `srcset`: telefonas ir ne-retina ekranas
 atsisiunčia 400 px, o retina — 700 px.
 
-**3. Nusiųsk į GitHub**
+**5. Nusiųsk į GitHub**
 
 ```
 git add .
@@ -47,8 +80,8 @@ git push
 
 Puslapis atsinaujina per ~1 minutę.
 
-> **Keitei `style.css`, `app.js` ar `index.html`?** Padidink `VERSIJA` failo `sw.js`
-> viršuje (`photography-v13` → `v14`). Service worker talpina senas versijas, ir be
+> **Keitei `style.css`, `app.js` ar HTML?** Padidink `VERSIJA` failo `sw.js`
+> viršuje (`photography-v15` → `v16`). Service worker talpina senas versijas, ir be
 > šito grįžtantis lankytojas dar ilgai matys seną puslapį.
 
 ## Peržiūra kompiuteryje
@@ -59,14 +92,17 @@ Atsidaryk `index.html` naršyklėje — veikia ir be serverio.
 
 | Failas | Kas ten |
 |---|---|
-| `index.html` | Tekstai: pavadinimas, „Apie“, kontaktai |
+| `photos/puslapiai.txt` | **Atranka ir tvarka** — kas į kurį puslapį patenka |
 | `assets/style.css` | Išvaizda, spalvos (viršuje `:root`) |
-| `assets/app.js` | Galerijos ir lightbox veikimas |
+| `assets/app.js` | Nuotraukos lango (lightbox) veikimas |
 | `sw.js` | Talpyklos versija — didinti po kiekvieno pakeitimo |
+| `index.html` | Hero nuotrauka, „About“, kontaktai |
 
-> Galerijų HTML `index.html` faile tarp `GALLERY:START` ir `GALLERY:END`
-> **generuojamas automatiškai**. Keisdamas plytelių žymėjimą, tą patį pakeitimą
-> daryk ir `tools/paruosti-nuotraukas.ps1` — kitaip kitas nuotraukų importas jį ištrins.
+> Galerijų HTML tarp `GALLERY:START` ir `GALLERY:END` **generuojamas automatiškai**.
+> Keisdamas plytelių žymėjimą, tą patį pakeitimą daryk ir
+> `tools/paruosti-nuotraukas.ps1` — kitaip kitas importas jį ištrins.
+> Visa kita puslapių dalis (antraštė, hero, „About“) redaguojama ranka —
+> skriptas jos neliečia.
 
 ## Svarbu
 
